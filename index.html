@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Multiplayer Game</title>
+  <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+  <script>
+    const socket = io();
+    socket.on('playerMove', (data) => {
+      console.log('Player moved:', data);
+    });
+
+    document.addEventListener('keydown', (event) => {
+      const move = { key: event.key };
+      socket.emit('playerMove', move);
+    });
+  </script>
+</body>
+</html>
