@@ -1,6 +1,6 @@
 let player;
 // tilemap properties;
-let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder;
+let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile;
 // preload variables
 let outermapimage, spikesimage, outermapcornerimage;
 
@@ -79,7 +79,7 @@ function setup() {
 	outermapcornerBR.h = 16;
 	outermapcornerBR.img = outermapcornerimage;
 	outermapcornerBR.scale = 0.1;
-	outermapcornerBR.tile = 'k';
+	outermapcornerBR.tile = 'x';
 	outermapcornerBR.rotationLock = true;
 	outermapcornerBR.collider = "s";
 
@@ -91,11 +91,27 @@ function setup() {
 	placeholder.rotationLock = true;
 	placeholder.collider = "s";
 
+	entry = new Group();
+	entry.w = 16;
+	entry.h = 16;
+	entry.scale = 0.1;
+	entry.tile = 'E';
+	entry.rotationLock = true;
+	entry.collider = "s";
+
+	spawntile = new Group();
+	spawntile.w = 16;
+	spawntile.h = 16;
+	spawntile.scale = 0.1;
+	spawntile.tile = 's';
+	spawntile.rotationLock = true;
+	spawntile.collider = "n";
+
 
 
 	levelselect = new Tiles(
 		[
-			"bbbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			"bbbbJ.sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			"bbbbJ..bbbbbbbbbbz.................xbbbb",
 			"bbbbJ..bbbbbbbbbz...................xbbb",
 			"bbbbJ..bbbbbbbbz.....................xbb",
@@ -111,14 +127,14 @@ function setup() {
 			"bbb..jbbbbbbb......................bb..E",
 			"bbb..jbbbbbbb......................bbbbb",
 			"bbb..jbbbbbbb......................xbbbb",
-			"bbb..jbbbbbbb............kbbZ..........b",
+			"bbb..jbbbbbbb............cbbZ..........b",
 			"bbb..jbbbbbbb............bbbb..........b",
 			"bbb..jbbbbbbb............bbbb..........b",
 			"bbb......................bbbb..........b",
 			"bbb......................bbbb..........b",
 			"bbb......................bbbb..........b",
 			"bbbZ.....................bbbbZ.........b",
-			"bbbbbbbbbbbbZEEEEkbbcEEEEbbbbbZEEEEkbbbb",
+			"bbbbbbbbbbbbZEEEEkbbcEEEEbbbbbZEEEEcbbbb",
 		],
 		36, 40,
 		16, 16
