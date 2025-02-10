@@ -1,25 +1,37 @@
 let player;
 // tilemap properties;
-let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile;
+let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg;
+
 
 
 function preload(){
 
-	outermapcornerimage = "assets/outermapcorner.png";
-	outermapimage = "assets/outermap.png";
-	spikesimage = "assets/spikes.png";
+	parallaximg = loadImage("assets/parallax image.png");
+	outermapcornerimage = loadImage("assets/outermapcorner(2).png");
+	outermapimage = loadImage("assets/outermap.png");
+	spikesimage = loadImage("assets/spikes.png");
 }
 
-function setup() {
+function setup(){
   createCanvas(windowWidth, windowHeight);
 
+	world.gravity.y = 9.80665;
+
+	parallax = new Sprite();
+	parallax.img = parallaximg;
+	parallax.rotationLock = true;
+	parallax.collider = "n";
+	parallax.scale = 2;
+	parallax.w = 0.5;
+	parallax.h = windowHeight;
+	parallax.debug = true;
+
   	outermap = new Group();
+	outermap.img = outermapimage;
 	outermap.w = 16;
 	outermap.h = 16;
-	outermap.img = outermapimage;
-	outermap.scale = 0.1;
 	outermap.tile = 'b';
 	outermap.rotationLock = true;
 	outermap.collider = "s";
@@ -44,41 +56,40 @@ function setup() {
 	spikesl.rotationLock = true;
 	spikesl.collider = "s";
 
+
 	outermapcornerTR = new Group();
-	outermapcornerTR.w = 16;
-	outermapcornerTR.h = 16;
+	outermapcornerTR.diameter = 26;
 	outermapcornerTR.img = outermapcornerimage;
-	outermapcornerTR.scale = 0.1;
-	outermapcornerTR.tile = 'z';
+	outermapcornerTR.scale = 0.5;
+	outermapcornerTR.tile = 'Z';
+	outermapcornerTR.offset.x = -100
 	outermapcornerTR.rotation = 180;
 	outermapcornerTR.rotationLock = true;
 	outermapcornerTR.collider = "s";
 
 	outermapcornerBL = new Group();
-	outermapcornerBL.w = 16;
-	outermapcornerBL.h = 16;
+	outermapcornerBL.diameter = 26;
 	outermapcornerBL.img = outermapcornerimage;
-	outermapcornerBL.scale = 0.1;
+	outermapcornerBL.scale = 0.5;
 	outermapcornerBL.tile = 'c';
 	outermapcornerBL.rotation = 90;
 	outermapcornerBL.rotationLock = true;
 	outermapcornerBL.collider = "s";
 
 	outermapcornerTL = new Group();
-	outermapcornerTL.w = 16;
-	outermapcornerTL.h = 16;
+	outermapcornerTL.diameter = 26;
 	outermapcornerTL.img = outermapcornerimage;
-	outermapcornerTL.scale = 0.1;
-	outermapcornerTL.tile = 'Z';
+	outermapcornerTL.scale = 0.5;
+	outermapcornerTL.tile = 'z';
 	outermapcornerTL.rotation = 270;
 	outermapcornerTL.rotationLock = true;
 	outermapcornerTL.collider = "s";
 
 	outermapcornerBR = new Group();
-	outermapcornerBR.w = 16;
-	outermapcornerBR.h = 16;
+	outermapcornerBR.diameter = 26;
 	outermapcornerBR.img = outermapcornerimage;
-	outermapcornerBR.scale = 0.1;
+	console.log("true")
+	outermapcornerBR.scale = 0.5;
 	outermapcornerBR.tile = 'x';
 	outermapcornerBR.rotationLock = true;
 	outermapcornerBR.collider = "s";
@@ -122,9 +133,9 @@ function setup() {
 			"bbbbJ..bbbbbbE.........................b",
 			"bbbb...bbbbbbE.........................b",
 			"bbbb..cbbbbbbbbbbbbbbbbbb..............b",
-			"bbbz..bbbbbbbbbbbbbbbbbbz..........kb..E",
-			"bbb...bbbbbbb......................bb..E",
-			"bbb..jbbbbbbb......................bb..E",
+			"bbbz..bbbbbbbbbbbbbbbbbbz..........cb..E",
+			"bbb...bbbbbbbbz....................bb..E",
+			"bbb..jbbbbbbbz.....................bb..E",
 			"bbb..jbbbbbbb......................bbbbb",
 			"bbb..jbbbbbbb......................xbbbb",
 			"bbb..jbbbbbbb............cbbZ..........b",
@@ -134,16 +145,76 @@ function setup() {
 			"bbb......................bbbb..........b",
 			"bbb......................bbbb..........b",
 			"bbbZ.....................bbbbZ.........b",
-			"bbbbbbbbbbbbZEEEEkbbcEEEEbbbbbZEEEEcbbbb",
+			"bbbbbbbbbbbbZEEEEcbbZEEEEbbbbbZEEEEcbbbb",
 		],
-		36, 40,
+		0, 0,
 		16, 16
 	);  
+
+	player = new Sprite(0,0, 10,10, "d")
+	player.rotationLock = true;
+
+	for(s of spawntile){
+		player.x = s.x;
+		player.y = s.y;
+	}
+
+
+	outermap.debug = false;
+	outermapcornerTR.debug = false;
+	outermapcornerTL.debug = false;
+	outermapcornerBL.debug = false;
+	outermapcornerBR.debug = false;
 
 }
 
 function draw() {
-  background(220);
+	background("black");
+	movements();
+	cameradefiner()
+	spiketouch();
+	parallaxchanger();
 
 }
 
+
+function spiketouch(){
+	if((player.colliding(spikesl)) || (player.colliding(spikesr))){
+		player.vel.x = 0;
+		player.vel.y = 0;
+		for(s of spawntile){
+			player.x = s.x;
+			player.y = s.y;
+		}
+	}
+}
+
+function parallaxchanger(){
+	parallax.x = player.x;
+	parallax.moveTo(player.y + (player.y - player.y/2))
+}
+
+function cameradefiner(){
+
+	camera.x = player.x;
+	camera.y = player.y;
+	camera.zoom = 2;
+
+}
+
+function movements(){
+
+	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR))))){
+		player.vel.y -= 5;
+	}
+	if((kb.pressing("a"))){
+		player.vel.x = -2;
+	}
+	if((kb.pressing("d"))){
+		player.vel.x = 2;
+	}
+	if(kb.pressing("s")){
+		player.vel.y += 3;
+	}
+	
+}
