@@ -1,8 +1,8 @@
 let player;
 // tilemap properties;
-let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base;
+let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage, parallaximg;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay;
 
 
 
@@ -12,6 +12,7 @@ function preload(){
 	outermapcornerimage = loadImage("assets/outermapcorner(2).png");
 	outermapimage = loadImage("assets/outermap.png");
 	spikesimage = loadImage("assets/spikes.png");
+	bgoverlay = loadImage("assets/backgroundoverlay.png")
 }
 
 function setup(){
@@ -22,11 +23,20 @@ function setup(){
 	parallax = new Sprite();
 	parallax.img = parallaximg;
 	parallax.rotationLock = true;
-	parallax.collider = "n";
+	parallax.collider = "s";
 	parallax.scale = 2;
-	parallax.w = 0.5;
+	parallax.w = 1;
 	parallax.h = windowHeight;
-	parallax.debug = true;
+	parallax.debug = false;
+
+	backgroundoverlay = new Sprite();
+	backgroundoverlay.img = bgoverlay;
+	backgroundoverlay.rotationLock = true;
+	backgroundoverlay.collider = "s";
+	backgroundoverlay.scale = 4;
+	backgroundoverlay.w = 1;
+	backgroundoverlay.h = windowHeight/2;
+	backgroundoverlay.debug = false;
 
   	outermap = new Group();
 	outermap.img = outermapimage;
@@ -153,10 +163,17 @@ function setup(){
 
 	player = new Sprite(0,0, 10,10, "d")
 	player.rotationLock = true;
+	player.overlaps(parallax)
+	player.overlaps(backgroundoverlay)
 
 	for(s of spawntile){
 		player.x = s.x;
 		player.y = s.y;
+	}
+
+	for(p of placeholder){
+		backgroundoverlay.x = p.x;
+		backgroundoverlay.y = p.y + backgroundoverlay.h/2;
 	}
 
 
@@ -198,7 +215,7 @@ function cameradefiner(){
 
 	camera.x = player.x;
 	camera.y = player.y;
-	camera.zoom = 2;
+	camera.zoom = 6; // maybe change camera to be in the area like box? make it slide but only to an extent so the camera cannot go past walls.
 
 }
 
