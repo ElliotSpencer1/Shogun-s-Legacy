@@ -98,7 +98,6 @@ function setup(){
 	outermapcornerBR = new Group();
 	outermapcornerBR.diameter = 26;
 	outermapcornerBR.img = outermapcornerimage;
-	console.log("true")
 	outermapcornerBR.scale = 0.5;
 	outermapcornerBR.tile = 'x';
 	outermapcornerBR.rotationLock = true;
@@ -115,7 +114,8 @@ function setup(){
 	entry = new Group();
 	entry.w = 16;
 	entry.h = 16;
-	entry.scale = 0.1;
+	entry.scale = 1;
+	entry.color = "cyan"
 	entry.tile = 'E';
 	entry.rotationLock = true;
 	entry.collider = "s";
@@ -128,8 +128,6 @@ function setup(){
 	spawntile.rotationLock = true;
 	spawntile.collider = "n";
 
-
-
 	levelselect = new Tiles(
 		[
 			"bbbbJ.sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
@@ -137,7 +135,7 @@ function setup(){
 			"bbbbJ..bbbbbbbbbz...................xbbb",
 			"bbbbJ..bbbbbbbbz.....................xbb",
 			"bbbbJ..bbbbbbbz.......................xb",
-			"bbbbJ..bbbbbbE...............t..........",
+			"bbbbJ..bbbbbbE..........................",
 			"bbbbJ..bbbbbbE..........................",
 			"bbbbJ..bbbbbbE.........................b",
 			"bbbbJ..bbbbbbE.........................b",
@@ -145,7 +143,7 @@ function setup(){
 			"bbbb..cbbbbbbbbbbbbbbbbbb..............b",
 			"bbbz..bbbbbbbbbbbbbbbbbbz..........cb..E",
 			"bbb...bbbbbbbbz....................bb..E",
-			"bbb..jbbbbbbbz.....................bb..E",
+			"bbb..jbbbbbbbz...........t.........bb..E",
 			"bbb..jbbbbbbb......................bbbbb",
 			"bbb..jbbbbbbb......................xbbbb",
 			"bbb..jbbbbbbb............cbbZ..........b",
@@ -155,7 +153,9 @@ function setup(){
 			"bbb......................bbbb..........b",
 			"bbb......................bbbb..........b",
 			"bbbZ.....................bbbbZ.........b",
-			"bbbbbbbbbbbbZEEEEcbbZEEEEbbbbbZEEEEcbbbb",
+			"bbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbb",
+			"bbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbb",
+			"bbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbb",
 		],
 		0, 0,
 		16, 16
@@ -173,7 +173,7 @@ function setup(){
 
 	for(p of placeholder){
 		backgroundoverlay.x = p.x;
-		backgroundoverlay.y = p.y + backgroundoverlay.h/2;
+		backgroundoverlay.y = 175;
 	}
 
 
@@ -212,9 +212,9 @@ function parallaxchanger(){
 }
 
 function cameradefiner(){
-
 	camera.x = player.x;
 	camera.y = player.y;
+
 	camera.zoom = 6; // maybe change camera to be in the area like box? make it slide but only to an extent so the camera cannot go past walls.
 
 }
