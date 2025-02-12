@@ -2,7 +2,9 @@ let player;
 // tilemap properties;
 let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet;
+// assigning booleans
+let horizontalmove, verticalmove, idle;
 
 
 
@@ -12,7 +14,27 @@ function preload(){
 	outermapcornerimage = loadImage("assets/outermapcorner(2).png");
 	outermapimage = loadImage("assets/outermap.png");
 	spikesimage = loadImage("assets/spikes.png");
-	bgoverlay = loadImage("assets/backgroundoverlay.png")
+	bgoverlay = loadImage("assets/backgroundoverlay.png");
+	ssheet = loadImage("assets/ninja.png");
+
+}
+
+function playersetup(){
+	player = new Sprite(0,0, 10,10, "d")
+	player.rotationLock = true;
+
+	player.layer = 2
+	player.spriteSheet = ssheet;
+	player.anis.frameDelay = 4
+	player.addAnis({
+    	moveUpRight: {row:5, frames:3},
+    	moveUpLeft: {row:4, frames:3},
+    	moveLeft: {row:1, frames:7},
+    	moveRight: {row:2, frames:7},
+    	idle:{row:0}
+  	})
+  	player.scale = 0.7
+
 }
 
 function setup(){
@@ -65,7 +87,6 @@ function setup(){
 	spikesl.rotation = 270;
 	spikesl.rotationLock = true;
 	spikesl.collider = "s";
-
 
 	outermapcornerTR = new Group();
 	outermapcornerTR.diameter = 26;
@@ -130,39 +151,44 @@ function setup(){
 
 	levelselect = new Tiles(
 		[
-			"bbbbJ.sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-			"bbbbJ..bbbbbbbbbbz.................xbbbb",
-			"bbbbJ..bbbbbbbbbz...................xbbb",
-			"bbbbJ..bbbbbbbbz.....................xbb",
-			"bbbbJ..bbbbbbbz.......................xb",
-			"bbbbJ..bbbbbbE..........................",
-			"bbbbJ..bbbbbbE..........................",
-			"bbbbJ..bbbbbbE.........................b",
-			"bbbbJ..bbbbbbE.........................b",
-			"bbbb...bbbbbbE.........................b",
-			"bbbb..cbbbbbbbbbbbbbbbbbb..............b",
-			"bbbz..bbbbbbbbbbbbbbbbbbz..........cb..E",
-			"bbb...bbbbbbbbz....................bb..E",
-			"bbb..jbbbbbbbz...........t.........bb..E",
-			"bbb..jbbbbbbb......................bbbbb",
-			"bbb..jbbbbbbb......................xbbbb",
-			"bbb..jbbbbbbb............cbbZ..........b",
-			"bbb..jbbbbbbb............bbbb..........b",
-			"bbb..jbbbbbbb............bbbb..........b",
-			"bbb......................bbbb..........b",
-			"bbb......................bbbb..........b",
-			"bbb......................bbbb..........b",
-			"bbbZ.....................bbbbZ.........b",
-			"bbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbb",
-			"bbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbb",
-			"bbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ.sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbz.................xbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbz...................xbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbz.....................xbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbz.......................xbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................EEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................EEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbb..cbbbbbbbbbbbbbbbbbb..............bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbz..bbbbbbbbbbbbbbbbbbz..........cb..EEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbb...bbbbbbbbz....................bb..EEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbbz...........t.........bb..EEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb......................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb......................xbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............cbbZ..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbZ.....................bbbbZ.........bbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
 		],
 		0, 0,
 		16, 16
 	);  
 
-	player = new Sprite(0,0, 10,10, "d")
-	player.rotationLock = true;
+	playersetup();
 	player.overlaps(parallax)
 	player.overlaps(backgroundoverlay)
 
@@ -208,7 +234,7 @@ function spiketouch(){
 
 function parallaxchanger(){
 	parallax.x = player.x;
-	parallax.moveTo(player.y + (player.y - player.y/2))
+	parallax.moveTo(player.x, 500 + (player.y - player.y/2), 1)
 }
 
 function cameradefiner(){
@@ -221,7 +247,7 @@ function cameradefiner(){
 
 function movements(){
 
-	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR))))){
+	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)))))){
 		player.vel.y -= 5;
 	}
 	if((kb.pressing("a"))){
@@ -234,4 +260,50 @@ function movements(){
 		player.vel.y += 3;
 	}
 	
+}
+
+function spritesheetset(){
+	if((!kb.pressing("a")) && (!kb.pressing("w")) && (!kb.pressing("d")) && (!kb.pressing("s")) && !verticalmove){
+		idle = true;
+	}
+	if((kb.pressing("a")) || (kb.pressing("d"))){
+		horizontalmove = true;
+		idle = false;
+	}
+	if((kb.pressing("w")) || (kb.pressing("s")) || (player.vel.y != 0)){
+		verticalmove = true;
+		horizontalmove = false;
+		
+	}
+
+
+	if(idle){
+		player.changeAni("idle");
+	}
+	if(horizontalmove){
+		if(kb.pressing("d")){
+			player.changeAni("moveRight");
+		}
+		if(kb.pressing("a")){
+			player.changeAni("moveLeft")
+		}
+	}
+	if(verticalmove){
+		if(player.vel.y > 0){
+			if(kb.pressing("a")){
+				player.changeAni("moveUpLeft");
+			}
+			if(kb.pressing("d")){
+				player.changeAni("moveUpRight");
+			}
+		}
+		if(player.vel.y < 0){
+			if(kb.pressing("a")){
+				player.moveUpLeft.frame = 2;
+			}
+			if(kb.pressing("d")){
+				player.moveUpRight.frame = 2;
+			}
+		}
+	}
 }
