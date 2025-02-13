@@ -15,24 +15,26 @@ function preload(){
 	outermapimage = loadImage("assets/outermap.png");
 	spikesimage = loadImage("assets/spikes.png");
 	bgoverlay = loadImage("assets/backgroundoverlay.png");
-	ssheet = loadImage("assets/ninja.png");
+	ssheet = loadImage("assets/alienBeige.png");
 
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 10,10, "d")
+	player = new Sprite(0,0, 13.335, 20, "d")
 	player.rotationLock = true;
+	player.scale = 1;
 
 	player.layer = 2
 	player.spriteSheet = ssheet;
 	player.anis.frameDelay = 4
 	player.addAnis({
-    	moveUpRight: {row:5, frames:3},
-    	moveUpLeft: {row:4, frames:3},
-    	moveLeft: {row:1, frames:7},
-    	moveRight: {row:2, frames:7},
+    	moveUpRight: {row:5, frames:2},
+    	moveUpLeft: {row:6, frames:2},
+    	moveLeft: {row:0, frames:2},
+    	moveRight: {row:2, frames:2},
     	idle:{row:0}
   	})
+	player.changeAni("moveUpRight")
   	player.scale = 0.7
 
 }
@@ -217,6 +219,7 @@ function draw() {
 	cameradefiner()
 	spiketouch();
 	parallaxchanger();
+	spritesheetset()
 
 }
 
@@ -256,53 +259,62 @@ function movements(){
 	if((kb.pressing("d"))){
 		player.vel.x = 2;
 	}
-	if(kb.pressing("s")){
-		player.vel.y += 3;
-	}
-	
 }
 
 function spritesheetset(){
 	if((!kb.pressing("a")) && (!kb.pressing("w")) && (!kb.pressing("d")) && (!kb.pressing("s")) && !verticalmove){
 		idle = true;
 	}
+	else{
+		
+	}
 	if((kb.pressing("a")) || (kb.pressing("d"))){
 		horizontalmove = true;
-		idle = false;
+	}
+	else{
+		horizontalmove = false;
 	}
 	if((kb.pressing("w")) || (kb.pressing("s")) || (player.vel.y != 0)){
 		verticalmove = true;
-		horizontalmove = false;
-		
+	}
+	else{
+		verticalmove = false;
 	}
 
 
 	if(idle){
 		player.changeAni("idle");
+		console.log("bean7")
 	}
 	if(horizontalmove){
 		if(kb.pressing("d")){
 			player.changeAni("moveRight");
+			console.log("bean6")
 		}
 		if(kb.pressing("a")){
 			player.changeAni("moveLeft")
+			console.log("bean5")
 		}
 	}
 	if(verticalmove){
 		if(player.vel.y > 0){
 			if(kb.pressing("a")){
 				player.changeAni("moveUpLeft");
+				console.log("bean4")
 			}
 			if(kb.pressing("d")){
 				player.changeAni("moveUpRight");
+				console.log("bean3")
 			}
 		}
 		if(player.vel.y < 0){
 			if(kb.pressing("a")){
-				player.moveUpLeft.frame = 2;
+				player.changeAni("moveUpLeft");
+				console.log("bean2")
 			}
 			if(kb.pressing("d")){
-				player.moveUpRight.frame = 2;
+				player.changeAni("moveUpRight");
+				console.log("bean1")
 			}
 		}
 	}
