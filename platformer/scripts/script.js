@@ -1,8 +1,8 @@
 let player;
 // tilemap properties;
-let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay;
+let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay, stone;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet, grassblocki, mudblocki, stoneblocki;
 // assigning booleans
 let horizontalmove, verticalmove, idle;
 
@@ -10,20 +10,22 @@ let horizontalmove, verticalmove, idle;
 
 function preload(){
 
+	mudblocki = loadImage("assets/mudblock.png")
+	grassblocki = loadImage("assets/grassblock.png")
 	parallaximg = loadImage("assets/parallax image.png");
 	outermapcornerimage = loadImage("assets/outermapcorner(2).png");
 	outermapimage = loadImage("assets/outermap.png");
 	spikesimage = loadImage("assets/spikes.png");
 	bgoverlay = loadImage("assets/backgroundoverlay.png");
 	ssheet = loadImage("assets/alienBeige.png");
+	stoneblocki = loadImage("assets/stoneimage.png");
 
 }
 
 function playersetup(){
 	player = new Sprite(0,0, 13.335, 20, "d")
 	player.rotationLock = true;
-	player.scale = 1;
-
+	// player.scale = 1; \\
 	player.layer = 2
 	player.spriteSheet = ssheet;
 	player.anis.frameDelay = 4
@@ -35,7 +37,7 @@ function playersetup(){
     	idle:{row:0}
   	})
 	player.changeAni("moveUpRight")
-  	player.scale = 0.7
+  	player.scale = 0.7;
 
 }
 
@@ -69,6 +71,33 @@ function setup(){
 	outermap.tile = 'b';
 	outermap.rotationLock = true;
 	outermap.collider = "s";
+
+	grass = new Group();
+	grass.w = 160;
+	grass.h = 160;
+	grass.img = grassblocki;
+	grass.scale = 0.1;
+	grass.tile = 'g';
+	grass.rotationLock = true;
+	grass.collider = "s";
+
+	stone = new Group();
+	stone.w = 160;
+	stone.h = 160;
+	stone.img = stoneblocki;
+	stone.scale = 0.1;
+	stone.tile = 'a';
+	stone.rotationLock = true;
+	stone.collider = "s";
+
+	mudblock = new Group();
+	mudblock.w = 160;
+	mudblock.h = 160;
+	mudblock.img = mudblocki;
+	mudblock.scale = 0.1;
+	mudblock.tile = 'm';
+	mudblock.rotationLock = true;
+	mudblock.collider = "s";
 
 	spikesr = new Group();
 	spikesr.w = 16;
@@ -133,6 +162,7 @@ function setup(){
 	placeholder.tile = 't';
 	placeholder.rotationLock = true;
 	placeholder.collider = "s";
+	placeholder.visible = false;
 
 	entry = new Group();
 	entry.w = 16;
@@ -149,42 +179,59 @@ function setup(){
 	spawntile.scale = 0.1;
 	spawntile.tile = 's';
 	spawntile.rotationLock = true;
+	spawntile.visible = false;
 	spawntile.collider = "n";
 
 	levelselect = new Tiles(
-		[
-			"bbbbbbbbbbbbbbbbbbbbJ.sbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbz.................xbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbz...................xbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbz.....................xbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbbz.......................xbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................EEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................EEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbb..cbbbbbbbbbbbbbbbbbb..............bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbz..bbbbbbbbbbbbbbbbbbz..........cb..EEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbb...bbbbbbbbz....................bb..EEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbbz...........t.........bb..EEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb......................bbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb......................xbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............cbbZ..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbZ.....................bbbbZ.........bbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbb",
+		[	"aa...................................................................aa",
+			"aa...................................................................aa",
+			"aa...................................................................aa",
+			"aa...................................................................aa",
+			"aa..................................................................aaa",
+			"aaa.................................................................aaa",
+			"aaa.................................................................aaa",
+			"aaa.................................................................aaa",
+			"aaa.................................................................aaa",
+			"aaa...........................................................s.....aaa",
+			"aaagggggggggggggggggggg...ggggggggggggggggggggggggggggggggggggggggggaaa",
+			"aaammmmmmmmmmmmmmmmmmmm...mmmmmmmmammmmmmmmmmmmmmmmmammmmmmmmmmmmmmmaaa",
+			"aaammmmmmmmmmammmmmmmmm...mmmmmmmmmmmmmmmmammmmmmmmmmmmmmmmmmammmmmmaaa",
+			"aaammmmmmmmmmmmmmmmammm...mmmmmmmmmmmammmmmmmmmmmmmmammmmmmmmmmmmmmmaaa",
+			"aaammmmmmmmmmmmmmmmmmmm...mmmmmmmmmmmmmmmmammmmmmmmmmmmmmmmmmmmammmmaaa",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbz.................xbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbz...................xbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbz.....................xbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbz.......................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbJ...bbbbbE.........................EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbbbJ..cbbbbbE.........................EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbb..cbbbbbbbbbbbbbbbbbb..............bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbz..bbbbbbbbbbbbbbbbbbz..........cb..EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbbbz....................bb..EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbbz...........t.........bb..EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb......................bbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb......................xbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............cbbZ..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbZ.....................bbbbZ.........bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
 		],
 		0, 0,
 		16, 16
@@ -201,7 +248,7 @@ function setup(){
 
 	for(p of placeholder){
 		backgroundoverlay.x = p.x;
-		backgroundoverlay.y = 175;
+		backgroundoverlay.y = 500;
 	}
 
 
@@ -250,7 +297,7 @@ function cameradefiner(){
 
 function movements(){
 
-	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)))))){
+	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)) || (player.colliding(grass)))))){
 		player.vel.y -= 5;
 	}
 	if((kb.pressing("a"))){
