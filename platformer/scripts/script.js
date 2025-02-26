@@ -2,9 +2,12 @@ let player;
 // tilemap properties;
 let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay, stone;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet, grassblocki, mudblocki, stoneblocki;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet, grassblocki, mudblocki, stoneblocki, ssheet2;
 // assigning booleans
-let horizontalmove, verticalmove, idle;
+let horizontalmove, verticalmove, idle, dashcooldown, shiftmove;
+dashcooldown = false;
+shiftmove = false;
+let bean;
 
 
 
@@ -19,31 +22,38 @@ function preload(){
 	bgoverlay = loadImage("assets/backgroundoverlay.png");
 	ssheet = loadImage("assets/alienBeige.png");
 	stoneblocki = loadImage("assets/stoneimage.png");
+	ssheet2 = loadImage("assets/knight.png");
 
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 13.335, 20, "d")
+	player = new Sprite(0,0, 32, 32, "d")
+	player.debug = true;
 	player.rotationLock = true;
 	// player.scale = 1; \\
 	player.layer = 2
-	player.spriteSheet = ssheet;
-	player.anis.frameDelay = 4
+	// player.offset.x = 20
+	player.spriteSheet = ssheet2;
+	player.anis.frameDelay = 6;
 	player.addAnis({
-    	moveUpRight: {row:5, frames:2},
-    	moveUpLeft: {row:6, frames:2},
-    	moveLeft: {row:0, frames:2},
-    	moveRight: {row:2, frames:2},
-    	idle:{row:0}
+    	Rollleft: {row:4, frames:8},
+    	Rollright: {row:5, frames:8},
+    	moveLeft: {row:3, frames:8},
+    	moveRight: {row:2, frames:8},
+    	idle:{row:0, frames:4}
   	})
-	player.changeAni("moveUpRight")
-  	player.scale = 0.7;
+	player.changeAni("idle")
+  	// player.scale = 0.7;
+	// player.w = 16;
+	// player.h = 20;
+	// bean = player.addCollider(0, 6,16,20);
 
 }
 
 function setup(){
   createCanvas(windowWidth, windowHeight);
 
+	base = 2;
 	world.gravity.y = 9.80665;
 
 	parallax = new Sprite();
@@ -301,10 +311,32 @@ function movements(){
 		player.vel.y -= 5;
 	}
 	if((kb.pressing("a"))){
-		player.vel.x = -2;
+		player.vel.x = base * -1;
 	}
 	if((kb.pressing("d"))){
-		player.vel.x = 2;
+		player.vel.x = base;
+	}
+	if(kb.pressing("shift")){
+		if((kb.pressing("a")) && (!dashcooldown)){
+			base = 4;
+			dashcooldown = true;
+			setTimeout(() => {
+				base = 2;
+				setTimeout(() => {
+					dashcooldown = false;
+				}, 500)
+			}, 1000)
+		}
+		if((kb.pressing("d")) && (!dashcooldown)){
+			base = 4;
+			dashcooldown = true;
+			setTimeout(() => {
+				base = 2;
+				setTimeout(() => {
+					dashcooldown = false;
+				}, 500)
+			}, 1000)
+		}
 	}
 }
 
@@ -321,11 +353,13 @@ function spritesheetset(){
 	else{
 		horizontalmove = false;
 	}
-	if((kb.pressing("w")) || (kb.pressing("s")) || (player.vel.y != 0)){
-		verticalmove = true;
+	if(kb.presses("shift")){
+		shiftmove = true;
 	}
 	else{
-		verticalmove = false;
+		setTimeout(() => {
+			shiftmove = false;
+		}, 1500)
 	}
 
 
@@ -333,7 +367,7 @@ function spritesheetset(){
 		player.changeAni("idle");
 		console.log("bean7")
 	}
-	if(horizontalmove){
+	if(horizontalmove && !shiftmove){
 		if(kb.pressing("d")){
 			player.changeAni("moveRight");
 			console.log("bean6")
@@ -343,26 +377,18 @@ function spritesheetset(){
 			console.log("bean5")
 		}
 	}
-	if(verticalmove){
-		if(player.vel.y > 0){
-			if(kb.pressing("a")){
-				player.changeAni("moveUpLeft");
-				console.log("bean4")
-			}
-			if(kb.pressing("d")){
-				player.changeAni("moveUpRight");
-				console.log("bean3")
-			}
+	if(shiftmove && horizontalmove){
+		if(kb.pressing("a")){
+			player.changeAni("Rollleft");
 		}
-		if(player.vel.y < 0){
-			if(kb.pressing("a")){
-				player.changeAni("moveUpLeft");
-				console.log("bean2")
-			}
-			if(kb.pressing("d")){
-				player.changeAni("moveUpRight");
-				console.log("bean1")
-			}
+		if(kb.pressing("d")){
+			player.changeAni("Rollright")
 		}
+	}
+	if(kb.pressing("shift") && kb.pressing("a")){
+		player.changeAni("Rollleft")
+	}
+	if(kb.pressing("d") && kb.pressing("shift")){
+		player.changeAni("Rollright")
 	}
 }
