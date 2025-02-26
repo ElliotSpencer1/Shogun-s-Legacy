@@ -27,8 +27,8 @@ function preload(){
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 32, 32, "d")
-	player.debug = true;
+	player = new Sprite(0,0, 15, 20, "d")
+	// player.debug = true;
 	player.rotationLock = true;
 	// player.scale = 1; \\
 	player.layer = 2
@@ -36,10 +36,10 @@ function playersetup(){
 	player.spriteSheet = ssheet2;
 	player.anis.frameDelay = 6;
 	player.addAnis({
-    	Rollleft: {row:4, frames:8},
-    	Rollright: {row:5, frames:8},
-    	moveLeft: {row:3, frames:8},
-    	moveRight: {row:2, frames:8},
+    	Rollleft: {row:3, frames:7},
+    	Rollright: {row:4, frames:7},
+    	moveLeft: {row:1, frames:7},
+    	moveRight: {row:2, frames:7},
     	idle:{row:0, frames:4}
   	})
 	player.changeAni("idle")
