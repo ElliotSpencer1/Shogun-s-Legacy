@@ -20,7 +20,7 @@ function preload(){
 	outermapimage = loadImage("assets/outermap.png");
 	spikesimage = loadImage("assets/spikes.png");
 	bgoverlay = loadImage("assets/backgroundoverlay.png");
-	ssheet = loadImage("assets/alienBeige.png");
+	// ssheet = loadImage("assets/alienBeige.png");
 	stoneblocki = loadImage("assets/stoneimage.png");
 	ssheet2 = loadImage("assets/knight.png");
 
@@ -47,6 +47,7 @@ function playersetup(){
 	// player.w = 16;
 	// player.h = 20;
 	// bean = player.addCollider(0, 6,16,20);
+	player.bounciness = 0;
 
 }
 
@@ -174,6 +175,15 @@ function setup(){
 	placeholder.collider = "s";
 	placeholder.visible = false;
 
+	infrontofentry = new Group();
+	infrontofentry.w = 16;
+	infrontofentry.h = 16;
+	infrontofentry.scale = 1;
+	infrontofentry.color = "cyan"
+	infrontofentry.tile = 'U';
+	infrontofentry.rotationLock = true;
+	infrontofentry.collider = "n";
+
 	entry = new Group();
 	entry.w = 16;
 	entry.h = 16;
@@ -182,6 +192,33 @@ function setup(){
 	entry.tile = 'E';
 	entry.rotationLock = true;
 	entry.collider = "s";
+
+	entry1 = new Group();
+	entry1.w = 16;
+	entry1.h = 16;
+	entry1.scale = 1;
+	entry1.color = "yellow"
+	entry1.tile = 'p';
+	entry1.rotationLock = true;
+	entry1.collider = "s";
+
+	entry2 = new Group();
+	entry2.w = 16;
+	entry2.h = 16;
+	entry2.scale = 1;
+	entry2.color = "orange"
+	entry2.tile = 'l';
+	entry2.rotationLock = true;
+	entry2.collider = "s";
+
+	entry3 = new Group();
+	entry3.w = 16;
+	entry3.h = 16;
+	entry3.scale = 1;
+	entry3.color = "red"
+	entry3.tile = 'o';
+	entry3.rotationLock = true;
+	entry3.collider = "s";
 
 	spawntile = new Group();
 	spawntile.w = 16;
@@ -213,19 +250,19 @@ function setup(){
 			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbbz.................xbbbbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbbz...................xbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbbz.....................xbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbbz.......................bbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbJ...bbbbbE.........................EEEEEEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbbbJ..cbbbbbE.........................EEEEEEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbJ..bbbbbbE.........................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbb...bbbbbbbbz.....................xbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbb...bbbbbbbz.......................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbb....bbbbbE.........................EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbbb...cbbbbbE.........................EEEEEEEEEEEEEE",
+			"bbbbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbb...bbbbbbE.........................bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbb..cbbbbbbbbbbbbbbbbbb..............bbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbz..bbbbbbbbbbbbbbbbbbz..........cb..EEEEEEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbbbz....................bb..EEEEEEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbbz...........t.........bb..EEEEEEEEEEEEEE",
-			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb......................bbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb......................xbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbz..bbbbbbbbbbbbbbbbbbz..........cb..oooooooooooooo",
+			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbbbz....................bb..oooooooooooooo",
+			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbbz...........t.........bb..oooooooooooooo",
+			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbb......................bbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbb...bbbbbbb......................xbbbbbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............cbbZ..........bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbb..jbbbbbbb............bbbb..........bbbbbbbbbbbbbb",
@@ -234,14 +271,14 @@ function setup(){
 			"bbbbbbbbbbbbbbbbbbbbb......................bbbb..........bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbZ.....................bbbbZ.........bbbbbbbbbbbbbb",
 			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbZ....cbbZ....bbbbbZ....cbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
-			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbEEEEbbbbbbEEEEbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....bbbbppppbbbbbb....bbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbppppbbbbbbllllbbbbbbbbbbbbbbbbbb",
+			"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbEEEEbbbbppppbbbbbbllllbbbbbbbbbbbbbbbbbb",
 		],
 		0, 0,
 		16, 16
@@ -277,6 +314,7 @@ function draw() {
 	spiketouch();
 	parallaxchanger();
 	spritesheetset()
+	levelloader()
 
 }
 
@@ -390,5 +428,12 @@ function spritesheetset(){
 	}
 	if(kb.pressing("d") && kb.pressing("shift")){
 		player.changeAni("Rollright")
+	}
+}
+
+function levelloader(){
+	if(player.colliding(entry)){
+		window.location.href = "level1.html"
+		console.log("fire")
 	}
 }

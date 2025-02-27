@@ -31,11 +31,11 @@ function setup(){
   bgoverlay = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   // bgoverlay.image = backgroundi;
   // bgoverlay.scale = 
-  bgoverlay.color = "#b5c6e0";
+  bgoverlay.color = "#141414";
 
-  cracktexture = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
-  cracktexture.image = cracktexturei;
-  cracktexture.scale = (windowHeight/200)
+  // cracktexture = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
+  // cracktexture.image = cracktexturei;
+  // cracktexture.scale = (windowHeight/200)
 
   titlebar = new Sprite(windowWidth/2, windowHeight/10, 200, 50);
   titlebar.image = (bluebari);
