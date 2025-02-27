@@ -12,7 +12,6 @@ let bean;
 
 
 function preload(){
-
 	mudblocki = loadImage("assets/mudblock.png")
 	grassblocki = loadImage("assets/grassblock.png")
 	parallaximg = loadImage("assets/parallax image.png");
@@ -28,7 +27,7 @@ function preload(){
 
 function playersetup(){
 	player = new Sprite(0,0, 15, 20, "d")
-	// player.debug = true;
+	player.debug = true;
 	player.rotationLock = true;
 	// player.scale = 1; \\
 	player.layer = 2
