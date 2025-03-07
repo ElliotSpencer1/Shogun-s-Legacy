@@ -1,8 +1,8 @@
 let player, base;
 let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
-let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slgr, srgl, ogle, sl, exittile, spawntile, acidpool, sidejump, dash, d, gtmb;
+let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slgr, srgl, ogle, sl, exittile, spawntile, acidpool, sidejump, dash, d, gtmb, mesbr, sltb, sltlb, sbmt, slc, acid;
 // images for the above objects
-let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi;
+let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap;
 // values
 let soundval;
 
@@ -29,14 +29,17 @@ function preload(){
   sli = loadImage("level1assets/stoneleft.png");
   ssheet2 = loadImage("assets/knight.png");
   di = loadImage("level1assets/dirt.png");
-  gtmbi = loadImage("level1assets/grasstopmudbottom.png")
+  gtmbi = loadImage("level1assets/grasstopmudbottom.png");
+  mesbri = loadImage("level1assets/mudendstonebr.png");
+  sltbi = loadImage("level1assets/stonelefttopbottom.png");
+  sltlbi = loadImage("level1assets/stonelefttopleftbottom.png")
+  sbmti = loadImage("level1assets/stonebottommudtop.png");
+  slci = loadImage("level1assets/slc.png");
+  acidtilemap = loadImage("level1assets/acidtilemap.png")
 
 }
 
 function playersetup(){
-
-
-
 	player = new Sprite(0,0, 15, 20, "d")
 	player.debug = true;
 	player.rotationLock = true;
@@ -118,6 +121,20 @@ function setup(){
 	gm.tile = 'k';
 	gm.rotationLock = true;
 	gm.collider = "s";
+
+	acid = new Group();
+	acid.w = 24;
+	acid.h = 24;
+	acid.spriteSheet = acidtilemap;
+	acid.addAnis({
+    	acids: {row:0, frames:4},
+  	})
+	acid.tile = 'a';
+	acid.friction = 0;
+	acid.rotationLock = true;
+	acid.collider = "s";
+	// acid.anis.frameDelay = 3;
+	acid.layer = 2;
 
 	gs = new Group();
 	gs.w = 24;
@@ -231,10 +248,50 @@ function setup(){
 	srgl.rotationLock = true;
 	srgl.collider = "s";
 
+	mesbr = new Group();
+	mesbr.w = 24;
+	mesbr.h = 24;
+	mesbr.img = mesbri;
+	mesbr.tile = 'O';
+	mesbr.rotationLock = true;
+	mesbr.collider = "s";
+
+	sltb = new Group();
+	sltb.w = 24;
+	sltb.h = 24;
+	sltb.img = sltbi;
+	sltb.tile = 'P';
+	sltb.rotationLock = true;
+	sltb.collider = "s";
+
+	sltlb = new Group();
+	sltlb.w = 24;
+	sltlb.h = 24;
+	sltlb.img = sltlbi;
+	sltlb.tile = 'X';
+	sltlb.rotationLock = true;
+	sltlb.collider = "s";
+
+	sbmt = new Group();
+	sbmt.w = 24;
+	sbmt.h = 24;
+	sbmt.img = sbmti;
+	sbmt.tile = 'T';
+	sbmt.rotationLock = true;
+	sbmt.collider = "s";
+
+	slc = new Group();
+	slc.w = 24;
+	slc.h = 24;
+	slc.img = slci;
+	slc.tile = 'U';
+	slc.rotationLock = true;
+	slc.collider = "s";
+
 	spawntile = new Group();
 	spawntile.w = 24;
 	spawntile.h = 24;
-	spawntile.tile = 'U';
+	spawntile.tile = 'Y';
 	spawntile.rotationLock = true;
 	spawntile.visible = false;
 	spawntile.collider = "n";
@@ -247,13 +304,13 @@ function setup(){
 	exittile.visible = false;
 	exittile.collider = "n";
 
-	acidpool = new Group();
-	acidpool.w = 24;
-	acidpool.h = 24;
-	acidpool.tile = 'a';
-	acidpool.rotationLock = true;
-	// acidpool.visible = false;
-	acidpool.collider = "n";
+	// acidpool = new Group();
+	// acidpool.w = 24;
+	// acidpool.h = 24;
+	// acidpool.tile = 'a';
+	// acidpool.rotationLock = true;
+	// // acidpool.visible = false;
+	// acidpool.collider = "n";
 
 	sidejump = new Group();
 	sidejump.w = 24;
@@ -276,25 +333,25 @@ function setup(){
 			"........................................",
 			"........................................",
 			"w.........................p............c",
-			"ffffffffffu.....L......paatakk...p...mff",
-			"hHhHhHhHhHr.....L...kaatkkkk.....t...MKl",
-			"KlKlKlKlKlr.....L.L..kkk.........t...MhH",
+			"ffffffffffu.....L......paataff...p...mff",
+			"hHhHhHhHhHr.....L...faaKKTTTTO...t...MKl",
+			"KlKlKlKlKlr.....L.L.UTTTO........t...MhH",
 			"hHhHhHhHhHr.....L.L..............t...MKl",
 			"KlKlKlKlKlr.....L.L..............t...MhH",
-			"kkkkkkkkkkk.....L.L..............t...MKl",
+			"TTTTTTTTTTO.....L.L..............t...MKl",
 			"................L.L..............t...MhH",
-			"................L................kaaaKKl",
-			"..................................kkkKhH",
-			"..................kkkaaap...p........MKl",
-			".....................kkkt...t........MhH",
-			"........................k...k..kkk...MKl",
-			"....................................MhhH",
+			"................L................MaaaKKl",
+			".................................UTTTKhH",
+			"..................fffaaap...p........MKl",
+			"..................UTTTTTt...t........MhH",
+			"........................faaataafff...MKl",
+			"........................UTTTTTTTTO..PXhH",
 			".....................................MKl",
 			"...................................z.MhH",
 			".......................ffffffffffu.Z.MKl",
 			"......................fhHhHhHhHhHr.Z.MhH",
 			"...................ffffKlKlKlKlKlr.Z.MKl",
-			"U...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
+			"Y...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
 			"ffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKl",
 			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
 			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
@@ -318,6 +375,13 @@ function setup(){
 	player.overlaps(bg1);
 	player.overlaps(bg2);
 	player.overlaps(bg3);
+
+	for(a of acid){
+		if(a.friction = 0){
+			a.changeAni("acids")
+			a.friction = 10;
+		}
+	}
 
 }
 
