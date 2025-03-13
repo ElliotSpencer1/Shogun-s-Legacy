@@ -8,6 +8,7 @@ let horizontalmove, verticalmove, idle, dashcooldown, shiftmove;
 dashcooldown = false;
 shiftmove = false;
 let bean;
+let spritesheet01i, spritesheet01;
 
 
 
@@ -22,11 +23,13 @@ function preload(){
 	// ssheet = loadImage("assets/alienBeige.png");
 	stoneblocki = loadImage("assets/stoneimage.png");
 	ssheet2 = loadImage("assets/knight.png");
+	spritesheet01i = loadImage("spriteassets/samurai.png");
+
 
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 15, 20, "d")
+	player = new Sprite(0,0, 74.8, 68, "d")
 	player.debug = true;
 	player.rotationLock = true;
 	// player.scale = 1; \\

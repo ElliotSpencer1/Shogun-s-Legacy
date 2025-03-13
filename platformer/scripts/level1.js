@@ -5,9 +5,12 @@ let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slg
 let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap, acidblocki;
 // values
 let soundval;
+let spritesheet01i, spritesheet01;
+
 
 function preload(){
 
+  spritesheet01i = loadImage("spriteassets/samurai.png");
   bg1i = loadImage("level1assets/background_layer_1.png");
   bg2i = loadImage("level1assets/background_layer_2.png");
   bg3i = loadImage("level1assets/background_layer_3.png");
@@ -41,27 +44,28 @@ function preload(){
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 15, 20, "d")
-	player.debug = true;
+	player = new Sprite(0,0, 68, 68, "d")
+	// player.debug = true;
 	player.rotationLock = true;
-	// player.scale = 1; \\
 	player.layer = 2
-	// player.offset.x = 20
-	player.spriteSheet = ssheet2;
+	player.spriteSheet = spritesheet01i;
 	player.anis.frameDelay = 6;
 	player.addAnis({
     	Rollleft: {row:3, frames:7},
     	Rollright: {row:4, frames:7},
     	moveLeft: {row:1, frames:7},
-    	moveRight: {row:2, frames:7},
-    	idle:{row:0, frames:4}
+    	moveRight: {row:4, frames:8},
+		jumpright:{row:3, frames:3},
+    	death:{row:0, frames:10},
+		idle:{row:2, frames:5}
   	})
 	player.changeAni("idle")
-  	// player.scale = 0.7;
-	// player.w = 16;
-	// player.h = 20;
-	// bean = player.addCollider(0, 6,16,20);
+	player.scale = 0.5;
+	player.width = 14;
+	player.height = 20;
+	player.anis.offset.y = -11.5;
 	player.bounciness = 0;
+	player.friction = 5;
 
 }
 
@@ -346,7 +350,7 @@ function setup(){
 			"hHhHhHhHhHr.....L...faaKKTTTTO...t...MKl",
 			"KlKlKlKlKlr.....L.L.UTTTO........t...MhH",
 			"hHhHhHhHhHr.....L.L..............t...MKl",
-			"KlKlKlKlKlr  .....L.L..............t...MhH",
+			"KlKlKlKlKlr.....L.L..............t...MhH",
 			"TTTTTTTTTTO.....L.L..............t...MKl",
 			"................L.L..............t...MhH",
 			"................L................MaaaKKl",
@@ -358,7 +362,7 @@ function setup(){
 			".....................................MKl",
 			"...................................z.MhH",
 			".......................ffffffffffu.Z.MKl",
-			"......................fhHhHhHhHhHr.Z.MhH",
+			"......................ffHhHhHhHhHr.Z.MhH",
 			"...................ffffKlKlKlKlKlr.Z.MKl",
 			"Y...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
 			"ffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKl",
@@ -444,19 +448,19 @@ function spritesheetset(){
 	else{
 		
 	}
+
 	if((kb.pressing("a")) || (kb.pressing("d"))){
 		horizontalmove = true;
 	}
 	else{
 		horizontalmove = false;
 	}
-	if(kb.presses("shift")){
-		shiftmove = true;
+
+	if(kb.pressing("w")){
+		verticalmove = true;
 	}
-	else{
-		setTimeout(() => {
-			shiftmove = false;
-		}, 1500)
+	if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs))){
+		verticalmove = false;
 	}
 
 
@@ -467,27 +471,26 @@ function spritesheetset(){
 	if(horizontalmove && !shiftmove){
 		if(kb.pressing("d")){
 			player.changeAni("moveRight");
+			player.mirror.x = false;
 			console.log("bean6")
 		}
 		if(kb.pressing("a")){
-			player.changeAni("moveLeft")
+			player.changeAni("moveRight")
+			player.mirror.x = true;
 			console.log("bean5")
 		}
 	}
-	if(shiftmove && horizontalmove){
-		if(kb.pressing("a")){
-			player.changeAni("Rollleft");
-		}
+	if(verticalmove){
 		if(kb.pressing("d")){
-			player.changeAni("Rollright")
+			player.changeAni("jumpright")
+			player.mirror.x = false;
+		}
+		if(kb.pressing("a")){
+			player.changeAni("jumpright")
+			player.mirror.x = true;
 		}
 	}
-	if(kb.pressing("shift") && kb.pressing("a")){
-		player.changeAni("Rollleft")
-	}
-	if(kb.pressing("d") && kb.pressing("shift")){
-		player.changeAni("Rollright")
-	}
+
 }
 
 function camerastuff(){
