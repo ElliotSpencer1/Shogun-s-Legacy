@@ -5,11 +5,15 @@ let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slg
 let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap, acidblocki;
 // values
 let soundval;
-let spritesheet01i, spritesheet01;
+let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
+let storytimeout, storybean;
+let walljump = false;
+let dashmove = false;
 
 
 function preload(){
 
+  skillspritei = loadImage("spriteassets/skill.png");
   spritesheet01i = loadImage("spriteassets/samurai.png");
   bg1i = loadImage("level1assets/background_layer_1.png");
   bg2i = loadImage("level1assets/background_layer_2.png");
@@ -138,7 +142,6 @@ function setup(){
 	acid.friction = 0;
 	acid.rotationLock = true;
 	acid.collider = "n";
-	// acid.anis.frameDelay = 3;
 	acid.layer = 3;
 
 	acidblock = new Group();
@@ -156,6 +159,23 @@ function setup(){
 	gs.tile = 'p';
 	gs.rotationLock = true;
 	gs.collider = "s";
+
+	skillspritetile = new Group();
+	skillspritetile.w = 200;
+	skillspritetile.h = 200;
+	skillspritetile.spriteSheet = skillspritei;
+	skillspritetile.addAnis({
+    	skillthing: {row:0, frames:15},
+  	})
+	skillspritetile.tile = 'S';
+	skillspritetile.friction = 0;
+	skillspritetile.rotationLock = true;
+	skillspritetile.collider = "S";
+	skillspritetile.layer = 7;
+	skillspritetile.scale = 0.1;
+	skillspritetile.w = 20;
+	skillspritetile.h = 20;
+	// skillspritetile.debug = true;
 
 	gsb = new Group();
 	gsb.w = 24;
@@ -317,29 +337,30 @@ function setup(){
 	exittile.visible = false;
 	exittile.collider = "n";
 
-	// acidpool = new Group();
-	// acidpool.w = 24;
-	// acidpool.h = 24;
-	// acidpool.tile = 'a';
-	// acidpool.rotationLock = true;
-	// // acidpool.visible = false;
-	// acidpool.collider = "n";
-
 	sidejump = new Group();
 	sidejump.w = 24;
 	sidejump.h = 24;
 	sidejump.tile = 'L';
 	sidejump.rotationLock = true;
-	// sidejump.visible = false;
 	sidejump.collider = "n";
 
 	dash = new Group();
 	dash.w = 24;
 	dash.h = 24;
 	dash.tile = 'c';
+	dash.w = 200;
+	dash.h = 200;
+	dash.spriteSheet = skillspritei;
+	dash.addAnis({
+    	skillthings: {row:0, frames:15},
+  	})
+	dash.friction = 0;
 	dash.rotationLock = true;
-	// sidejump.visible = false;
-	dash.collider = "n";
+	dash.collider = "S";
+	dash.layer = 7;
+	dash.scale = 0.1;
+	dash.w = 20;
+	dash.h = 20;
 
 	levelselect = new Tiles(
 		[	"........................................",
@@ -354,7 +375,7 @@ function setup(){
 			"TTTTTTTTTTO.....L.L..............t...MKl",
 			"................L.L..............t...MhH",
 			"................L................MaaaKKl",
-			".................................UTTTKhH",
+			"...................S.............UTTTKhH",
 			"..................fffaaap...p........MKl",
 			"..................UTTTTTt...t........MhH",
 			"........................faaataafff...MKl",
@@ -396,14 +417,22 @@ function setup(){
 		}
 	}
 
+	for (s of skillspritetile) {
+		s.changeAni("skillthing"); 
+	}
+
+	for (d of dash) {
+		d.changeAni("skillthings"); 
+	}
+
 }
 
 function draw() {
 	background("black");
-
-  camerastuff();
-  movements();
-  spritesheetset();
+	story();
+  	camerastuff();
+  	movements();
+  	spritesheetset();
 }
 
 function movements(){
@@ -417,28 +446,17 @@ function movements(){
 	if((kb.pressing("d"))){
 		player.vel.x = base;
 	}
-	if(kb.pressing("shift")){
-		if((kb.pressing("a")) && (!dashcooldown)){
-			base = 4;
-			dashcooldown = true;
-			setTimeout(() => {
-				base = 2;
-				setTimeout(() => {
-					dashcooldown = false;
-				}, 500)
-			}, 1000)
-		}
-		if((kb.pressing("d")) && (!dashcooldown)){
-			base = 4;
-			dashcooldown = true;
-			setTimeout(() => {
-				base = 2;
-				setTimeout(() => {
-					dashcooldown = false;
-				}, 500)
-			}, 1000)
+
+	if(walljump){
+		// if(player.collides("")) add a wall to collide with
+	}
+
+	if(dashmove){
+		if(kb.presses("e")){
+
 		}
 	}
+
 }
 
 function spritesheetset(){
@@ -489,6 +507,9 @@ function spritesheetset(){
 			player.changeAni("jumpright")
 			player.mirror.x = true;
 		}
+		else{
+			player.changeAni("jumpright")
+		}
 	}
 
 }
@@ -508,4 +529,35 @@ function camerastuff(){
 	bg3.x = bg1.x;
 	bg3.y = bg1.y;
 
+}
+
+function story(){
+	for(s of skillspritetile){
+		if(player.overlaps(s)){
+			storytimeout = true;
+			setTimeout(() => {
+				storybean = new Sprite(player.x, player.y - 60, 80, 40, "s");
+				storybean.color = "beige";
+				storybean.layer = 10;
+				storybean.text = "Ability walljump unlocked! \n On these walls ahead you are,\n now able to walljump (using spacebar).";
+				storybean.textSize = 3;
+				walljump = true;
+				setTimeout(() => {
+					storybean.remove();
+				}, 7500)
+			}, 1000)
+			s.remove();
+		}
+	}
+	if(storybean){
+		storybean.x = player.x;
+		storybean.y = player.y - 40;
+	}
+
+	for(d of dash){
+		if(player.overlaps(d)){
+			dashmove = true;
+			d.remove();
+		}
+	}
 }

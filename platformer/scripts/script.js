@@ -29,27 +29,28 @@ function preload(){
 }
 
 function playersetup(){
-	player = new Sprite(0,0, 74.8, 68, "d")
-	player.debug = true;
+	player = new Sprite(0,0, 68, 68, "d")
+	// player.debug = true;
 	player.rotationLock = true;
-	// player.scale = 1; \\
 	player.layer = 2
-	// player.offset.x = 20
-	player.spriteSheet = ssheet2;
+	player.spriteSheet = spritesheet01i;
 	player.anis.frameDelay = 6;
 	player.addAnis({
     	Rollleft: {row:3, frames:7},
     	Rollright: {row:4, frames:7},
     	moveLeft: {row:1, frames:7},
-    	moveRight: {row:2, frames:7},
-    	idle:{row:0, frames:4}
+    	moveRight: {row:4, frames:8},
+		jumpright:{row:3, frames:3},
+    	death:{row:0, frames:10},
+		idle:{row:2, frames:5}
   	})
 	player.changeAni("idle")
-  	// player.scale = 0.7;
-	// player.w = 16;
-	// player.h = 20;
-	// bean = player.addCollider(0, 6,16,20);
+	player.scale = 0.5;
+	player.width = 14;
+	player.height = 20;
+	player.anis.offset.y = -11.5;
 	player.bounciness = 0;
+	player.friction = 5;
 
 }
 
@@ -356,28 +357,7 @@ function movements(){
 	if((kb.pressing("d"))){
 		player.vel.x = base;
 	}
-	if(kb.pressing("shift")){
-		if((kb.pressing("a")) && (!dashcooldown)){
-			base = 4;
-			dashcooldown = true;
-			setTimeout(() => {
-				base = 2;
-				setTimeout(() => {
-					dashcooldown = false;
-				}, 500)
-			}, 1000)
-		}
-		if((kb.pressing("d")) && (!dashcooldown)){
-			base = 4;
-			dashcooldown = true;
-			setTimeout(() => {
-				base = 2;
-				setTimeout(() => {
-					dashcooldown = false;
-				}, 500)
-			}, 1000)
-		}
-	}
+
 }
 
 function spritesheetset(){
@@ -387,19 +367,19 @@ function spritesheetset(){
 	else{
 		
 	}
+
 	if((kb.pressing("a")) || (kb.pressing("d"))){
 		horizontalmove = true;
 	}
 	else{
 		horizontalmove = false;
 	}
-	if(kb.presses("shift")){
-		shiftmove = true;
+
+	if(kb.pressing("w")){
+		verticalmove = true;
 	}
-	else{
-		setTimeout(() => {
-			shiftmove = false;
-		}, 1500)
+	if(((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)) || (player.colliding(grass)))))){
+		verticalmove = false;
 	}
 
 
@@ -410,27 +390,26 @@ function spritesheetset(){
 	if(horizontalmove && !shiftmove){
 		if(kb.pressing("d")){
 			player.changeAni("moveRight");
+			player.mirror.x = false;
 			console.log("bean6")
 		}
 		if(kb.pressing("a")){
-			player.changeAni("moveLeft")
+			player.changeAni("moveRight")
+			player.mirror.x = true;
 			console.log("bean5")
 		}
 	}
-	if(shiftmove && horizontalmove){
-		if(kb.pressing("a")){
-			player.changeAni("Rollleft");
-		}
+	if(verticalmove){
 		if(kb.pressing("d")){
-			player.changeAni("Rollright")
+			player.changeAni("jumpright")
+			player.mirror.x = false;
+		}
+		if(kb.pressing("a")){
+			player.changeAni("jumpright")
+			player.mirror.x = true;
 		}
 	}
-	if(kb.pressing("shift") && kb.pressing("a")){
-		player.changeAni("Rollleft")
-	}
-	if(kb.pressing("d") && kb.pressing("shift")){
-		player.changeAni("Rollright")
-	}
+
 }
 
 function levelloader(){
