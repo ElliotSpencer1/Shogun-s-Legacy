@@ -2,13 +2,14 @@ let player, base;
 let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
 let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slgr, srgl, ogle, sl, exittile, spawntile, acidpool, sidejump, dash, d, gtmb, mesbr, sltb, sltlb, sbmt, slc, acid, acidblock;
 // images for the above objects
-let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap, acidblocki;
+let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap, acidblocki, headeri, sidejumpi;
 // values
 let soundval;
 let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
-let storytimeout, storybean;
+let storytimeout, storybean, storybean2;
 let walljump = false;
 let dashmove = false;
+let wallcooldown = false;
 
 
 function preload(){
@@ -44,6 +45,8 @@ function preload(){
   slci = loadImage("level1assets/slc.png");
   acidtilemap = loadImage("level1assets/acidtilemap.png")
   acidblocki = loadImage("level1assets/acidblocki.png");
+  headeri = loadImage("level1assets/header.png");
+  sidejumpi = loadImage("level1assets/SideJump.png");
 
 }
 
@@ -334,15 +337,16 @@ function setup(){
 	exittile.h = 24;
 	exittile.tile = 'w';
 	exittile.rotationLock = true;
-	exittile.visible = false;
-	exittile.collider = "n";
+	exittile.visible = true;
+	exittile.collider = "s";
 
 	sidejump = new Group();
 	sidejump.w = 24;
 	sidejump.h = 24;
+	sidejump.image = sidejumpi;
 	sidejump.tile = 'L';
 	sidejump.rotationLock = true;
-	sidejump.collider = "n";
+	sidejump.collider = "S";
 
 	dash = new Group();
 	dash.w = 24;
@@ -364,35 +368,35 @@ function setup(){
 
 	levelselect = new Tiles(
 		[	"........................................",
-			"........................................",
-			"........................................",
-			"w.........................p............c",
-			"ffffffffffu.....L......paataff...p...mff",
-			"hHhHhHhHhHr.....L...faaKKTTTTO...t...MKl",
-			"KlKlKlKlKlr.....L.L.UTTTO........t...MhH",
-			"hHhHhHhHhHr.....L.L..............t...MKl",
-			"KlKlKlKlKlr.....L.L..............t...MhH",
-			"TTTTTTTTTTO.....L.L..............t...MKl",
-			"................L.L..............t...MhH",
-			"................L................MaaaKKl",
-			"...................S.............UTTTKhH",
-			"..................fffaaap...p........MKl",
-			"..................UTTTTTt...t........MhH",
-			"........................faaataafff...MKl",
-			"........................UTTTTTTTTO..PXhH",
-			".....................................MKl",
-			"...................................z.MhH",
-			".......................ffffffffffu.Z.MKl",
-			"......................ffHhHhHhHhHr.Z.MhH",
-			"...................ffffKlKlKlKlKlr.Z.MKl",
-			"Y...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
-			"ffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKlllaallKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"lKlKlllIIllKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"r........................................",
+			"r........................................",
+			"rw.........................p............c",
+			"rffffffffffu....L.......paataff...p...mff",
+			"hhHhHhHhHhHr....L....faaKKTTTTO...t...MKl",
+			"hKlKlKlKlKlr....L..L.UTTTO........t...MhH",
+			"rhHhHhHhHhHr....L..L..............t...MKl",
+			"hKlKlKlKlKlr....L..L..............t...MhH",
+			"hTTTTTTTTTTO....L..L..............t...MKl",
+			"r...............L..L..............t...MhH",
+			"r...............L.................MaaaKKl",
+			"r...................S.............UTTTKhH",
+			"r..................fffaaap...p........MKl",
+			"r..................UTTTTTt...t........MhH",
+			"r........................faaataafff...MKl",
+			"r........................UTTTTTTTTO..PXhH",
+			"r.....................................MKl",
+			"r...................................z.MhH",
+			"r.......................ffffffffffu.Z.MKl",
+			"r......................ffHhHhHhHhHr.Z.MhH",
+			"r...................ffffKlKlKlKlKlr.Z.MKl",
+			"rY...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
+			"Kffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKlllaallKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+			"KlKlKlllIIllKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
 		],
 		0, 0,
 		23.9, 23.9
@@ -437,23 +441,65 @@ function draw() {
 
 function movements(){
 
-	if((kb.presses("w"))){
+	if((kb.presses("w")) && ((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb)))){
 		player.vel.y -= 5;
 	}
-	if((kb.pressing("a"))){
-		player.vel.x = base * -1;
-	}
-	if((kb.pressing("d"))){
-		player.vel.x = base;
+	if(!wallcooldown){
+		if(!dashcooldown){
+			if(player.vel.x <= base){
+				if(player.vel.x >= base *-1){
+					if((kb.pressing("a"))){
+						player.vel.x = base * -1;
+					}
+					if((kb.pressing("d"))){
+						player.vel.x = base;
+					}
+				}
+			}
+		}
 	}
 
 	if(walljump){
-		// if(player.collides("")) add a wall to collide with
+		if(!wallcooldown){
+			if(kb.pressing("w")){
+				if(player.colliding(sidejump) && (player.vel.x < 0)){
+					player.vel.x = 4;
+					player.vel.y -= 6;
+					wallcooldown = true;
+					player.mirror = false;
+					setTimeout(() => {
+						wallcooldown = false;
+					}, 200)
+				}
+				if(player.colliding(sidejump) && (player.vel.x > 0)){
+					player.vel.x = -4;
+					player.vel.y -= 6;
+					wallcooldown = true;
+					player.mirror = true;
+					setTimeout(() => {
+						wallcooldown = false;
+					}, 200)
+				}
+			}
+		}
 	}
 
 	if(dashmove){
 		if(kb.presses("e")){
-
+			if(kb.pressing("a")){
+				player.vel.x -= 7;
+				dashcooldown = true;
+				setTimeout(() => {
+					dashcooldown = false;
+				}, 1000)
+			}
+			if(kb.pressing("d")){
+				player.vel.x += 7;
+				dashcooldown = false;
+				setTimeout(() => {
+					dashcooldown = true;
+				}, 1000)
+			}
 		}
 	}
 
@@ -474,10 +520,10 @@ function spritesheetset(){
 		horizontalmove = false;
 	}
 
-	if(kb.pressing("w")){
+	if(kb.pressing("w") || (!player.colliding(mpp)) && (!player.colliding(ogle)) && (!player.colliding(ogre)) && (!player.colliding(cbs)) && (!player.colliding(gs)) && (!player.colliding(cts)) && (!player.colliding(sltb))){
 		verticalmove = true;
 	}
-	if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs))){
+	if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs) || (player.colliding(cts)) || (player.colliding(sltb)))){
 		verticalmove = false;
 	}
 
@@ -532,18 +578,46 @@ function camerastuff(){
 }
 
 function story(){
+	if(player.overlaps(exittile)){
+		// save to local storage
+		// maybe play animation
+		setTimeout(() => {
+			window.location.href = "hub.html"
+		}, 1000)
+	}
+	for(d of dash){
+		if(player.overlaps(d)){
+			storytimeout = true;
+			setTimeout(() => {
+				storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
+				storybean2.image = headeri;
+				storybean2.scale = 0.1;
+				storybean2.layer = 1;
+				storybean2.text = "Ability dash unlocked! \n  ahead you are able to dash,\n (using 'E').";
+				storybean2.textSize = 3;
+				dashmove = true;
+				setTimeout(() => {
+					storybean2.remove();
+					storytimeout = false;
+				}, 10000)
+			}, 1000)
+			s.remove();
+		}
+	}
 	for(s of skillspritetile){
 		if(player.overlaps(s)){
 			storytimeout = true;
 			setTimeout(() => {
 				storybean = new Sprite(player.x, player.y - 60, 80, 40, "s");
-				storybean.color = "beige";
-				storybean.layer = 10;
-				storybean.text = "Ability walljump unlocked! \n On these walls ahead you are,\n now able to walljump (using spacebar).";
+				storybean.image = headeri;
+				storybean.scale = 0.1;
+				storybean.layer = 1;
+				storybean.text = "Ability walljump unlocked! \n On these walls ahead you are,\n now able to walljump (using 'W').";
 				storybean.textSize = 3;
 				walljump = true;
 				setTimeout(() => {
 					storybean.remove();
+					storytimeout = false; 
 				}, 7500)
 			}, 1000)
 			s.remove();
@@ -552,6 +626,11 @@ function story(){
 	if(storybean){
 		storybean.x = player.x;
 		storybean.y = player.y - 40;
+	}
+
+	if(storybean2){
+		storybean2.x = player.x;
+		storybean2.y = player.y;
 	}
 
 	for(d of dash){
