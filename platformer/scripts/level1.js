@@ -73,6 +73,7 @@ function playersetup(){
 	player.anis.offset.y = -11.5;
 	player.bounciness = 0;
 	player.friction = 5;
+	player.health = 100;
 
 }
 
@@ -144,7 +145,7 @@ function setup(){
 	acid.tile = 'a';
 	acid.friction = 0;
 	acid.rotationLock = true;
-	acid.collider = "n";
+	acid.collider = "s";
 	acid.layer = 3;
 
 	acidblock = new Group();
@@ -638,5 +639,13 @@ function story(){
 			dashmove = true;
 			d.remove();
 		}
+	}
+
+	if(player.overlaps(acid)){
+		player.health -= 10;
+	}
+
+	if(player.health <= 0){
+		window.location.href = "level1.html"
 	}
 }
