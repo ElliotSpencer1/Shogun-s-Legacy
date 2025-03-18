@@ -134,7 +134,8 @@ function setup(){
 	spikesl.collider = "s";
 
 	outermapcornerTR = new Group();
-	outermapcornerTR.diameter = 26;
+	outermapcornerTR.w = 16;
+	outermapcornerTR.h = 16;
 	outermapcornerTR.img = outermapcornerimage;
 	outermapcornerTR.scale = 0.5;
 	outermapcornerTR.tile = 'Z';

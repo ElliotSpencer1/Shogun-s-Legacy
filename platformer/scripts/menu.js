@@ -3,6 +3,7 @@ let titlebar, playbutton, loadbutton, settings, bgoverlay, settingsback, soundpl
 let titlebari, bluebari, bluebarpressedi, backgroundi, settingsbacki, cracktexturei, arli, arri;
 // values
 let soundval;
+let bg1i, bg2i, bg3i, bg1, bg2, bg3;
 
 function preload(){
 
@@ -15,7 +16,29 @@ function preload(){
     crossi = loadImage("assets/iconCross_beige.png");
     arli = loadImage("assets/arrowBeige_left.png");
     arri = loadImage("assets/arrowBeige_right.png")
+    bg1i = loadImage("level1assets/background_layer_1.png")
+    bg2i = loadImage("level1assets/background_layer_2.png")
+    bg3i = loadImage("level1assets/background_layer_3.png")
 
+}
+
+function backgroundsetup(){
+  bg1 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
+  bg1.img = bg1i;
+
+  bg2 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
+  bg2.img = bg2i;
+
+  bg3 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
+  bg3.img = bg3i;
+
+  let scaleval = windowHeight / 140;
+
+  bg1.scale = scaleval;
+  bg2.scale = scaleval;
+  bg3.scale = scaleval;
+
+  console.log("ran")
 }
 
 function setup(){
@@ -32,6 +55,8 @@ function setup(){
   // bgoverlay.image = backgroundi;
   // bgoverlay.scale = 
   bgoverlay.color = "#141414";
+
+  backgroundsetup();
 
   // cracktexture = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   // cracktexture.image = cracktexturei;

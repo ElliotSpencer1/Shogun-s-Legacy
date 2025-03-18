@@ -812,7 +812,7 @@ function story(){
 
 function updateHealthBar() {
     // Clear all existing heart sprites
-    for (let h of healthbar) {
+    for (h of healthbar) {
         h.remove();
     }	
     
