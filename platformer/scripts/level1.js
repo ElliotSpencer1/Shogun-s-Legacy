@@ -6,11 +6,14 @@ let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, 
 // values
 let soundval;
 let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
-let storytimeout, storybean, storybean2;
+let storytimeout, storybean, storybean2, healthbar, healthi, healthinit = false;
 let walljump = false;
 let dashmove = false;
 let wallcooldown = false;
-
+let generalcd = false, attack1cd = false, attack2cd = false, attack3cd = false, attack1timeout = false, attack2timeout = false, attack3timeout = false, ran = false, attacking = false;
+let maxHearts = 10;
+let heartSprites = []; // Array to store heart sprites
+let heartsToShow = 10;
 
 function preload(){
 
@@ -47,6 +50,7 @@ function preload(){
   acidblocki = loadImage("level1assets/acidblocki.png");
   headeri = loadImage("level1assets/header.png");
   sidejumpi = loadImage("level1assets/SideJump.png");
+  healthi = loadImage("spriteassets/heart.png");
 
 }
 
@@ -58,6 +62,10 @@ function playersetup(){
 	player.spriteSheet = spritesheet01i;
 	player.anis.frameDelay = 6;
 	player.addAnis({
+		attack1:{row:6, frames:6},
+		attack2:{row:7, frames:5},
+		attack3:{row:8, frames:5},
+		hit:{row:1, frames: 4},
     	Rollleft: {row:3, frames:7},
     	Rollright: {row:4, frames:7},
     	moveLeft: {row:1, frames:7},
@@ -78,7 +86,7 @@ function playersetup(){
 }
 
 function setup(){
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth, windowHeight); 
 
 	base = 2;
 	world.gravity.y = 9.80665;
@@ -135,9 +143,20 @@ function setup(){
 	gm.rotationLock = true;
 	gm.collider = "s";
 
+	healthbar = new Group();
+	healthbar.w = 200;
+	healthbar.h = 200;
+	healthbar.img = healthi;
+	healthbar.scale = 0.025;
+	healthbar.w = 5;
+	healthbar.h = 5;
+	healthbar.rotationLock = true;
+	healthbar.collider = "s";
+
 	acid = new Group();
 	acid.w = 24;
 	acid.h = 24;
+	acid.debug = true;
 	acid.spriteSheet = acidtilemap;
 	acid.addAnis({
     	acids: {row:0, frames:4},
@@ -372,7 +391,7 @@ function setup(){
 			"r........................................",
 			"r........................................",
 			"rw.........................p............c",
-			"rffffffffffu....L.......paataff...p...mff",
+			"hffffffffffu....L.......paataff...p...mff",
 			"hhHhHhHhHhHr....L....faaKKTTTTO...t...MKl",
 			"hKlKlKlKlKlr....L..L.UTTTO........t...MhH",
 			"rhHhHhHhHhHr....L..L..............t...MKl",
@@ -382,8 +401,8 @@ function setup(){
 			"r...............L.................MaaaKKl",
 			"r...................S.............UTTTKhH",
 			"r..................fffaaap...p........MKl",
-			"r..................UTTTTTt...t........MhH",
-			"r........................faaataafff...MKl",
+			"r..................UTTTTTX...t........MhH",
+			"r........................Maaataafff...MKl",
 			"r........................UTTTTTTTTO..PXhH",
 			"r.....................................MKl",
 			"r...................................z.MhH",
@@ -419,6 +438,8 @@ function setup(){
 		if(a.friction == 0){
 			a.changeAni("acids")
 			a.friction = 10;
+			a.height = 20;
+			a.anis.offset.y = -7;
 		}
 	}
 
@@ -438,6 +459,7 @@ function draw() {
   	camerastuff();
   	movements();
   	spritesheetset();
+	updateHealthBar();
 }
 
 function movements(){
@@ -485,7 +507,7 @@ function movements(){
 		}
 	}
 
-	if(dashmove){
+	if((dashmove) && (!dashcooldown)){
 		if(kb.presses("e")){
 			if(kb.pressing("a")){
 				player.vel.x -= 7;
@@ -528,37 +550,143 @@ function spritesheetset(){
 		verticalmove = false;
 	}
 
+	if(mouse.presses()){
+		if((!attack1cd) && (!attack2cd) && (!attack3cd) && (!generalcd)){
+			attack1cd = true;
+			attack1timeout = true;
+			generalcd = true;
 
-	if(idle){
-		player.changeAni("idle");
-		console.log("bean7")
-	}
-	if(horizontalmove && !shiftmove){
-		if(kb.pressing("d")){
-			player.changeAni("moveRight");
-			player.mirror.x = false;
-			console.log("bean6")
+			setTimeout(() => {
+				attack1timeout = false;
+			}, 1000)
+
+			setTimeout(() => {
+				attack1cd  = false;
+			}, 750);
+
+			setTimeout(() => {
+				generalcd = false;
+			}, 250);
 		}
-		if(kb.pressing("a")){
-			player.changeAni("moveRight")
-			player.mirror.x = true;
-			console.log("bean5")
+		else if((attack1cd) && (!attack3cd) && (!generalcd)){
+			attack2cd = true;
+			attack2cd = true;
+
+			attack2timeout = true;
+			attack1timeout = true;
+
+			generalcd = true;
+
+			setTimeout(() => {
+				generalcd = false;
+			}, 250);
+
+			setTimeout(() => {
+				attack1cd = false;
+			}, 750);
+
+			setTimeout(() => {
+				attack2cd = false;
+			}, 750);
+
+			setTimeout(() => {
+				attack1timeout = false;
+			}, 1000)
+
+			setTimeout(() => {
+				attack2timeout = false;
+			}, 1000)
+			
+
 		}
-	}
-	if(verticalmove){
-		if(kb.pressing("d")){
-			player.changeAni("jumpright")
-			player.mirror.x = false;
-		}
-		if(kb.pressing("a")){
-			player.changeAni("jumpright")
-			player.mirror.x = true;
-		}
-		else{
-			player.changeAni("jumpright")
+		else if((attack1cd) && (attack2cd) && (!attack3cd) && (!generalcd)){
+			generalcd = true;
+
+			attack3cd = true
+			attack2cd = true;
+			attack1cd = true;
+
+			attack3timeout = true;
+			attack2timeout = true;
+			attack1timeout = true;
+
+			setTimeout(() => {
+				generalcd = false;
+			}, 250);
+
+			setTimeout(() => {
+				attack3cd = false;
+			}, 750);
+
+			setTimeout(() => {
+				attack2cd = false;
+			}, 750)
+
+			setTimeout(() => {
+				attack1cd = false;
+			}, 750)
+
+			setTimeout(() => {
+				attack3timeout = false;
+			}, 1000);
+
+			setTimeout(() => {
+				attack2timeout = false;
+			}, 1000)
+
+			setTimeout(() => {
+				attack1timeout = false;
+			}, 1000);
 		}
 	}
 
+	if(attack1cd && generalcd){
+		player.changeAni("attack1");
+		console.log("i1")
+		attacking = true;
+	}
+	else if(attack2cd && generalcd){
+		player.changeAni("attack2");
+		console.log("i2")
+		attacking = true;
+	}
+	else if(attack3cd && generalcd){
+		player.changeAni("attack3");
+		attacking = true;
+		console.log("i3")
+	}
+	else{
+		attacking = false;
+	}
+
+	if(!generalcd){
+		if(idle){
+			player.changeAni("idle");
+		}
+		if(horizontalmove && !shiftmove){
+			if(kb.pressing("d")){
+				player.changeAni("moveRight");
+				player.mirror.x = false;
+			}
+			if(kb.pressing("a")){
+				player.changeAni("moveRight")
+				player.mirror.x = true;
+			}
+		}
+		if(verticalmove){
+			if(kb.pressing("d")){
+				player.changeAni("jumpright")
+				player.mirror.x = false;
+			}
+			if(kb.pressing("a")){
+				player.changeAni("jumpright")
+				player.mirror.x = true;
+			}
+			else{
+				player.changeAni("jumpright")
+			}
+		}
+	}
 }
 
 function camerastuff(){
@@ -575,6 +703,31 @@ function camerastuff(){
 
 	bg3.x = bg1.x;
 	bg3.y = bg1.y;
+
+	heartsToShow = Math.floor(player.health / 10); // 1 heart per 10 HP
+
+
+    // Fix HUD position relative to camera
+    // for (h of healthbar) {
+	// 	h.x = player.x - 100
+	// 	h.y = player.y - 80
+	// }
+
+	for (let i = 0; i < heartsToShow - 1; i++) {
+		if(healthbar[i]){
+			if(i == 0){
+				healthbar[i].x = player.x - 150
+				healthbar[i].y = player.y - 80
+				console.log("bean1")
+			}
+			else if(healthbar[i]){
+				healthbar[i].x = player.x - i * 10;
+				healthbar[i].y = player.y - 80;
+				console.log("bean")
+			}
+			console.log(healthbar.length)
+		}
+    }
 
 }
 
@@ -631,7 +784,7 @@ function story(){
 
 	if(storybean2){
 		storybean2.x = player.x;
-		storybean2.y = player.y;
+		storybean2.y = player.y - 40;
 	}
 
 	for(d of dash){
@@ -641,11 +794,37 @@ function story(){
 		}
 	}
 
-	if(player.overlaps(acid)){
-		player.health -= 10;
+	for(a of acid){
+		if(player.overlapping(a)){
+			player.health -= 10;
+			player.changeAni("hit")
+		}
 	}
 
 	if(player.health <= 0){
-		window.location.href = "level1.html"
+		if(!ran){
+			player.changeAni("death")
+			window.location.href = "level1.html"
+			ran = true;
+		}
 	}
+}
+
+function updateHealthBar() {
+    // Clear all existing heart sprites
+    for (let h of healthbar) {
+        h.remove();
+    }	
+    
+    // Determine how many hearts should be displayed
+    heartsToShow = Math.floor(player.health / 10); // 1 heart per 10 HP
+
+    for (let i = 0; i < heartsToShow - 1; i++) {
+        let xOffset = 30 + (i * 25); // Position hearts in a row
+        let heart = new healthbar.Sprite();
+        heart.x = xOffset;
+        heart.y = 30; // Always near the top
+        heart.layer = 10; // Ensures HUD is rendered on top
+		// console.log(i);
+    }
 }
