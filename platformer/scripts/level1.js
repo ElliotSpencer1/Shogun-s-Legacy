@@ -14,9 +14,13 @@ let generalcd = false, attack1cd = false, attack2cd = false, attack3cd = false, 
 let maxHearts = 10;
 let heartSprites = []; // Array to store heart sprites
 let heartsToShow = 10;
+let healthcoverer;
+let enemy, enemyi, enemyspawntile, enemyattacking = false, moveleft = true, moveright = false;
 
 function preload(){
 
+  enemyi = loadImage("spriteassets/enemy.png");
+  healthi = loadImage("spriteassets/healthbar.png");
   skillspritei = loadImage("spriteassets/skill.png");
   spritesheet01i = loadImage("spriteassets/samurai.png");
   bg1i = loadImage("level1assets/background_layer_1.png");
@@ -50,8 +54,34 @@ function preload(){
   acidblocki = loadImage("level1assets/acidblocki.png");
   headeri = loadImage("level1assets/header.png");
   sidejumpi = loadImage("level1assets/SideJump.png");
-  healthi = loadImage("spriteassets/heart.png");
 
+}
+
+function enemysetup(){
+	enemy = new Group();
+	enemy.rotationLock = true;
+	enemy.layer = 2;
+	enemy.w = 50;
+	enemy.h = 50;
+	enemy.spriteSheet = enemyi;
+	enemy.anis.frameDelay = 6;
+	enemy.addAnis({
+		idle:{row:0, frames:7},
+		stun:{row:1, frames:5},
+		attack:{row:2, frames:10},
+		death:{row:3, frames:15},
+		stun:{row:4, frames: 18},
+		walk:{row:5, frames: 8}
+	})
+	enemy.scale = 0.64;
+	enemy.width = 20;
+	enemy.height = 30;
+	enemy.anis.offset.y = -11.5;
+	enemy.bounciness = 0;
+	enemy.friction = 5;
+	enemy.health = 100;
+	// enemy.debug = true;
+	enemy.anis.offset.y = 0
 }
 
 function playersetup(){
@@ -88,8 +118,25 @@ function playersetup(){
 function setup(){
   createCanvas(windowWidth, windowHeight); 
 
+  	enemysetup();
+
+	setInterval(() => {
+		if(!enemyattacking){
+			if(moveleft){
+				moveright = true;
+				moveleft = false;
+			}
+			else{
+				moveright = false;
+				moveleft = true;
+			}
+		}
+	}, 3000);
+
 	base = 2;
 	world.gravity.y = 9.80665;
+
+	let enemies = new Group();
 
 	bg1 = new Sprite();
 	bg1.img = bg1i;
@@ -142,16 +189,6 @@ function setup(){
 	gm.tile = 'k';
 	gm.rotationLock = true;
 	gm.collider = "s";
-
-	healthbar = new Group();
-	healthbar.w = 200;
-	healthbar.h = 200;
-	healthbar.img = healthi;
-	healthbar.scale = 0.025;
-	healthbar.w = 5;
-	healthbar.h = 5;
-	healthbar.rotationLock = true;
-	healthbar.collider = "s";
 
 	acid = new Group();
 	acid.w = 24;
@@ -386,43 +423,78 @@ function setup(){
 	dash.w = 20;
 	dash.h = 20;
 
+	enemyspawntile = new Group();
+	enemyspawntile.w = 24;
+	enemyspawntile.h = 24;
+	enemyspawntile.image = sidejumpi;
+	enemyspawntile.tile = '/';
+	enemyspawntile.rotationLock = false;
+	enemyspawntile.collider = "n";
+	enemyspawntile.visible = false;
+
+
 	levelselect = new Tiles(
-		[	"........................................",
-			"r........................................",
-			"r........................................",
-			"rw.........................p............c",
-			"hffffffffffu....L.......paataff...p...mff",
-			"hhHhHhHhHhHr....L....faaKKTTTTO...t...MKl",
-			"hKlKlKlKlKlr....L..L.UTTTO........t...MhH",
-			"rhHhHhHhHhHr....L..L..............t...MKl",
-			"hKlKlKlKlKlr....L..L..............t...MhH",
-			"hTTTTTTTTTTO....L..L..............t...MKl",
-			"r...............L..L..............t...MhH",
-			"r...............L.................MaaaKKl",
-			"r...................S.............UTTTKhH",
-			"r..................fffaaap...p........MKl",
-			"r..................UTTTTTX...t........MhH",
-			"r........................Maaataafff...MKl",
-			"r........................UTTTTTTTTO..PXhH",
-			"r.....................................MKl",
-			"r...................................z.MhH",
-			"r.......................ffffffffffu.Z.MKl",
-			"r......................ffHhHhHhHhHr.Z.MhH",
-			"r...................ffffKlKlKlKlKlr.Z.MKl",
-			"rY...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhH",
-			"Kffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKlllaallKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
-			"KlKlKlllIIllKlKlKlKlKlKlKlKlKlKlKlr.Z.MKl",
+		[	"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+			"hhhhhrTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTMhhhh",
+			"hhhhhr......................................Mhhhhh",
+			"hhhhhr......................................Mhhhhh",
+			"hhhhhr......................................Mhhhhh",
+			"hhhhhr........................................Mhhhhhh",
+			"hhhhhr........................................Mhhhhhh",
+			"hhhhhr........................................Mhhhhhh",
+			"hhhhhrw.........................p............cMhhhhh",
+			"hhhhhhffffffffffu....L.......paataff...p...mffhhhhhh",
+			"hhhhhhhhHHhHhHhHr....L..fffaaKKTTTTO...t...MhHhhhhhh",
+			"hhhhhhKlKlKlKlKlr....L..LTTTTTO........t...MhHhhhhhh",
+			"hhhhhhhHhHhHhHhHr....L..L..............t...MhHhhhhhh",
+			"hhhhhhKlKlKlKlKlr....L..L..............t...MhHhhhhhh",
+			"hhhhhhTTTTTTTTTTO....L..L..............t...MhHhhhhhh",
+			"hhhhhr...............L..L..............t...MhHhhhhhh",
+			"hhhhhr...............L.................MaaaKKlhhhhhh",
+			"hhhhhr...................S.............UTTTKhHhhhhhh",
+			"hhhhhr...............ffffffaaap...p........MKlhhhhhh",
+			"hhhhhr...............UTTTTTTTTX...t........MKlhhhhhh",
+			"hhhhhr........................Maaataafff...MKlhhhhhh",
+			"hhhhhr........................UTTTTTTTTO..PXhHhhhhhh",
+			"hhhhhr.....................................MKlhhhhhh",
+			"hhhhhr.........................../.......z.MKlhhhhhh",
+			"hhhhhr.......................ffffffffffu.Z.MKlhhhhhh",
+			"hhhhhr......................ffHhHhHhHhHr.Z.MKlhhhhhh",
+			"hhhhhr...................ffffKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhrY...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhHhhhhhh",
+			"hhhhhKffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKlllaallKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhKlKlKlllIIllKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
 		],
 		0, 0,
 		23.9, 23.9
 	);  
 
 	playersetup();
+
+	healthbar = new Sprite();
+	healthbar.w = 335;
+	healthbar.h = 56;
+	healthbar.img = healthi;
+	healthbar.scale = 0.20;
+	healthbar.color = "green";
+	healthbar.rotationLock = true;
+	healthbar.collider = "s";
+	// healthbar.textSize = 4;
+	healthbar.layer = "HUD";
+
+	healthcoverer = new Sprite();
+	healthcoverer.w = 2;
+	healthcoverer.h = 5.5;
+	healthcoverer.color = "gray"
+	healthcoverer.layer = "HUD";
+	healthcoverer.collider = "s";
+	healthcoverer.stroke = "gray";
+	healthcoverer.visible = false;
 
 
 	for(s of spawntile){
@@ -451,6 +523,16 @@ function setup(){
 		d.changeAni("skillthings"); 
 	}
 
+	for(e of enemyspawntile){
+		if(!e.rotationLock){
+			let b = new enemy.Sprite();
+			b.x = e.x;
+			b.y = e.y;
+			b.changeAni("idle");
+			e.rotationLock = true;
+		}
+	}
+
 }
 
 function draw() {
@@ -462,21 +544,42 @@ function draw() {
 	updateHealthBar();
 }
 
+function enemyfunctionality(){
+	if(moveleft){
+		enemy.vel.x = -5;
+	}
+	if(moveright){
+		enemy.vel.x = 5;
+	}
+
+	if(enemy.vel.x < 0){
+		enemy.changeAni("walk");
+		enemy.mirror.x = false;
+	}
+	else{
+		enemy.changeAni("walk")
+		enemy.mirror.x = true;
+	}
+
+	// add player attacking the shroom 
+	// maybe add idle frame
+	// add shroom attack if in distance  
+}
+
+
 function movements(){
 
 	if((kb.presses("w")) && ((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb)))){
 		player.vel.y -= 5;
 	}
 	if(!wallcooldown){
-		if(!dashcooldown){
-			if(player.vel.x <= base){
-				if(player.vel.x >= base *-1){
-					if((kb.pressing("a"))){
-						player.vel.x = base * -1;
-					}
-					if((kb.pressing("d"))){
-						player.vel.x = base;
-					}
+		if(player.vel.x <= base){
+			if(player.vel.x >= base *-1){
+				if((kb.pressing("a"))){
+					player.vel.x = base * -1;
+				}
+				if((kb.pressing("d"))){
+					player.vel.x = base;
 				}
 			}
 		}
@@ -704,30 +807,6 @@ function camerastuff(){
 	bg3.x = bg1.x;
 	bg3.y = bg1.y;
 
-	heartsToShow = Math.floor(player.health / 10); // 1 heart per 10 HP
-
-
-    // Fix HUD position relative to camera
-    // for (h of healthbar) {
-	// 	h.x = player.x - 100
-	// 	h.y = player.y - 80
-	// }
-
-	for (let i = 0; i < heartsToShow - 1; i++) {
-		if(healthbar[i]){
-			if(i == 0){
-				healthbar[i].x = player.x - 150
-				healthbar[i].y = player.y - 80
-				console.log("bean1")
-			}
-			else if(healthbar[i]){
-				healthbar[i].x = player.x - i * 10;
-				healthbar[i].y = player.y - 80;
-				console.log("bean")
-			}
-			console.log(healthbar.length)
-		}
-    }
 
 }
 
@@ -811,20 +890,22 @@ function story(){
 }
 
 function updateHealthBar() {
-    // Clear all existing heart sprites
-    for (h of healthbar) {
-        h.remove();
-    }	
-    
-    // Determine how many hearts should be displayed
-    heartsToShow = Math.floor(player.health / 10); // 1 heart per 10 HP
+	player.maxHealth = 100;
+    if (!healthbar || !healthcoverer || !player) return; // Prevent undefined errors
 
-    for (let i = 0; i < heartsToShow - 1; i++) {
-        let xOffset = 30 + (i * 25); // Position hearts in a row
-        let heart = new healthbar.Sprite();
-        heart.x = xOffset;
-        heart.y = 30; // Always near the top
-        heart.layer = 10; // Ensures HUD is rendered on top
-		// console.log(i);
-    }
+    healthbar.x = player.x - 150;
+    healthbar.y = player.y - 85;
+
+    // Ensure health stays between 0 and 100
+    player.health = constrain(player.health, 0, 100);
+
+    // Ensure width is positive
+    healthcoverer.w = player.health;
+
+
+    // Align right edge of healthcoverer with healthbar
+    healthcoverer.x = healthbar.x + (100 - healthcoverer.w) / 2 - 17.5; 
+    healthcoverer.y = healthbar.y;
+
+    healthcoverer.visible = player.health < 100;
 }
