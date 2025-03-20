@@ -3,11 +3,17 @@ if(localStorage.getItem("dash") != null){
 	var dashmove = localStorage.getItem("dash");
 	dashmove = JSON.parse(dashmove);
 	console.log(dashmove)
-  }
+}
+else{
+  var dashmove = false;
+}
 if(localStorage.getItem("walljump") != null){
 	var walljump = localStorage.getItem("walljump");
 	walljump = JSON.parse(walljump);
 	console.log(walljump)
+}
+else{
+  var walljump = false;
 }
 if(localStorage.getItem("stars") != null){
 	var stars = localStorage.getItem("stars");
@@ -15,8 +21,6 @@ if(localStorage.getItem("stars") != null){
 	console.log(stars)
 }
 else{
-	var walljump = false;
-	var dashmove = false;
 	var stars = 0;
 }
 if(localStorage.getItem("superJump") != null){
@@ -61,6 +65,7 @@ let beavo;
 let b;
 let doublejumpcooldown = false;
 let doublejumpobject;
+let bbottom;
 
 function preload(){
   stari = loadImage("spriteassets/star.png"); // Make sure to add this image or use an existing one
@@ -176,6 +181,14 @@ function setup(){
       }
     }
   }, 3000);
+
+  if(!superJump){
+		superJump = false;
+	}
+	else{
+		superJump = true;
+	}
+
 
   base = 2;
   world.gravity.y = 9.80665;
@@ -1167,7 +1180,6 @@ function pausefeature(){
 
 let btop;
 let bmiddle;
-let bbottom;
 
 if(bbottom){
   if(bbottom.mouse.hovering()){

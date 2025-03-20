@@ -3,11 +3,17 @@ if(localStorage.getItem("dash") != null){
 	var dashmove = localStorage.getItem("dash");
 	dashmove = JSON.parse(dashmove);
 	console.log(dashmove)
-  }
+}
+else{
+  var dashmove = false;
+}
 if(localStorage.getItem("walljump") != null){
 	var walljump = localStorage.getItem("walljump");
 	walljump = JSON.parse(walljump);
 	console.log(walljump)
+}
+else{
+  var walljump = false;
 }
 if(localStorage.getItem("stars") != null){
 	var stars = localStorage.getItem("stars");
@@ -15,8 +21,6 @@ if(localStorage.getItem("stars") != null){
 	console.log(stars)
 }
 else{
-	var walljump = false;
-	var dashmove = false;
 	var stars = 0;
 }
 if(localStorage.getItem("superJump") != null){
@@ -56,6 +60,7 @@ let attacktimeout = false, attackcd = false;
 let notstarted = true;
 let scores;
 let settingsopen = false;
+let bbottom;
 
 function preload(){
 
@@ -386,7 +391,7 @@ function buttoninteractions(){
         localStorage.clear();
     }
     if(loadbutton.mouse.pressed()){
-        window.location.href = "";
+        window.location.href = "hub.html";
         localStorage.setItem("soundval", soundval);
     }
     if(settings.mouse.pressed()){

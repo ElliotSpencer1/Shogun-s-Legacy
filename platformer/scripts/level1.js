@@ -3,11 +3,17 @@ if(localStorage.getItem("dash") != null){
 	var dashmove = localStorage.getItem("dash");
 	dashmove = JSON.parse(dashmove);
 	console.log(dashmove)
-  }
+}
+else{
+  var dashmove = false;
+}
 if(localStorage.getItem("walljump") != null){
 	var walljump = localStorage.getItem("walljump");
 	walljump = JSON.parse(walljump);
 	console.log(walljump)
+}
+else{
+  var walljump = false;
 }
 if(localStorage.getItem("stars") != null){
 	var stars = localStorage.getItem("stars");
@@ -15,24 +21,22 @@ if(localStorage.getItem("stars") != null){
 	console.log(stars)
 }
 else{
-	var walljump = false;
-	var dash = false;
 	var stars = 0;
 }
 if(localStorage.getItem("superJump") != null){
-	var superJump = localStorage.getItem("superJump");
-	superJump = JSON.parse(superJump);
-  } 
-  else{
-	var superJump = false;
+  var superJump = localStorage.getItem("superJump");
+  superJump = JSON.parse(superJump);
+} 
+else{
+  var superJump = false;
 }
 if(localStorage.getItem("doublejump") != null){
-    var doublejump = localStorage.getItem("doublejump");
-    doublejump = JSON.parse(doublejump);
-  } 
-  else{
-    var doublejump = false;
-  }
+  var doublejump = localStorage.getItem("doublejump");
+  doublejump = JSON.parse(doublejump);
+} 
+else{
+  var doublejump = false;
+}
 
 let player, base;
 let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
@@ -56,6 +60,7 @@ let beavo;
 let b;
 let doublejumpcooldown = false;
 let doublejumpobject;
+let bbottom;
 
 function preload(){
 
@@ -158,6 +163,13 @@ function playersetup(){
 
 function setup(){
   createCanvas(windowWidth, windowHeight); 
+
+	if(!dashmove){
+		dashmove = false;
+	}
+	else{
+		dashmove = true;
+	}
 
 	beavo = new Group();
 
@@ -515,14 +527,14 @@ function setup(){
 			"hhhhhr........................................Mhhhhhh",
 			"hhhhhr........................................Mhhhhhh",
 			"hhhhhrw..0......................p...........0cMhhhhh",
-			"hhhhhhffffffffffu....L.......paataff...p...mffhhhhhh",
-			"hhhhhhhhHHhHhHhHr....L..fffaaKKTTTTO...t...MhHhhhhhh",
-			"hhhhhhKlKlKlKlKlr....L..LTTTTTO........t...MhHhhhhhh",
-			"hhhhhhhHhHhHhHhHr....L..L..............t...MhHhhhhhh",
-			"hhhhhhKlKlKlKlKlr....L..L..............t...MhHhhhhhh",
-			"hhhhhhTTTTTTTTTTO....L..L..............t...MhHhhhhhh",
-			"hhhhhr...............L..L..............t...MhHhhhhhh",
-			"hhhhhr...............L......0..........MaaaKKlhhhhhh",
+			"hhhhhhffffffffffu...Mr.......paataff...p...mffhhhhhh",
+			"hhhhhhhhHHhHhHhHr...ML..fffaaKKTTTTO...t...MhHhhhhhh",
+			"hhhhhhKlKlKlKlKlr...ML..LTTTTTO........t...MhHhhhhhh",
+			"hhhhhhhHhHhHhHhHr...ML..L..............t...MhHhhhhhh",
+			"hhhhhhKlKlKlKlKlr...ML..L..............t...MhHhhhhhh",
+			"hhhhhhTTTTTTTTTTO...ML..L..............t...MhHhhhhhh",
+			"hhhhhr..............ML..L..............t...MhHhhhhhh",
+			"hhhhhr..............ML......0..........MaaaKKlhhhhhh",
 			"hhhhhr...................S.............UTTTKhHhhhhhh",
 			"hhhhhr...............ffffffaaap...p........MKlhhhhhh",
 			"hhhhhr...............UTTTTTTTTX...t........MKlhhhhhh",
@@ -987,24 +999,22 @@ function story(){
 		}, 1000)
 	}
 	for(d of dash){
-		if(!dashmove){
 			if(player.overlaps(d)){
-				storytimeout = true;
+			storytimeout = true;
+			setTimeout(() => {
+				storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
+				storybean2.image = headeri;
+				storybean2.scale = 0.1;
+				storybean2.layer = 1;
+				storybean2.text = "Ability dash unlocked! \n  ahead you are able to dash,\n (using 'E').";
+				storybean2.textSize = 3;
+				dashmove = true;
 				setTimeout(() => {
-					storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
-					storybean2.image = headeri;
-					storybean2.scale = 0.1;
-					storybean2.layer = 1;
-					storybean2.text = "Ability dash unlocked! \n  ahead you are able to dash,\n (using 'E').";
-					storybean2.textSize = 3;
-					dashmove = true;
-					setTimeout(() => {
-						storybean2.remove();
-						storytimeout = false;
-					}, 10000)
-				}, 1000)
-				s.remove();
-			}
+					storybean2.remove();
+					storytimeout = false;
+				}, 10000)
+			}, 1000)
+			d.remove();
 		}
 	}
 	for(s of skillspritetile){
@@ -1041,12 +1051,10 @@ function story(){
 		storybean2.x = player.x;
 		storybean2.y = player.y - 40;
 	}
-	if(dashmove){
-		for(d of dash){
-			if(player.overlaps(d)){
-				dashmove = true;
-				d.remove();
-			}
+	for(d of dash){
+		if(player.overlaps(d)){
+			dashmove = true;
+			d.remove();
 		}
 	}
 
@@ -1132,7 +1140,21 @@ function pausefeature(){
   
   let btop;
   let bmiddle;
-  let bbottom;
+
+  if(bbottom){
+	if(bbottom.mouse.hovering()){
+	  bbottom.color = "green";
+	  bbottom.textColor = "white";
+	}
+	else{
+	  bbottom.color = "yellow";
+	  bbottom.textColor = "black";
+	}
+  
+	if(bbottom.mouse.pressed()){
+		window.location.href = "hub.html";
+	}
+	}
 
   
 	if(kb.presses("p")){
@@ -1171,20 +1193,6 @@ function pausefeature(){
 			bbottom.text = "Menu!";
 			beavo.add(bbottom); // Add to group
 
-			if(bbottom){
-				if(bbottom.mouse.hovering()){
-				  bbottom.color = "green";
-				  bbottom.textColor = "white";
-				}
-				else{
-				  bbottom.color = "yellow";
-				  bbottom.textColor = "black";
-				}
-			  
-				if(bbottom.mouse.pressed()){
-				  window.location.href = "hub.html";
-				}
-			}
 		}
 	}
   }

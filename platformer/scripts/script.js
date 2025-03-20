@@ -3,11 +3,17 @@ if(localStorage.getItem("dash") != null){
 	var dashmove = localStorage.getItem("dash");
 	dashmove = JSON.parse(dashmove);
 	console.log(dashmove)
-  }
+}
+else{
+  var dashmove = false;
+}
 if(localStorage.getItem("walljump") != null){
 	var walljump = localStorage.getItem("walljump");
 	walljump = JSON.parse(walljump);
 	console.log(walljump)
+}
+else{
+  var walljump = false;
 }
 if(localStorage.getItem("stars") != null){
 	var stars = localStorage.getItem("stars");
@@ -15,30 +21,28 @@ if(localStorage.getItem("stars") != null){
 	console.log(stars)
 }
 else{
-	var walljump = false;
-	var dash = false;
 	var stars = 0;
 }
 if(localStorage.getItem("superJump") != null){
-	var superJump = localStorage.getItem("superJump");
-	superJump = JSON.parse(superJump);
-  } 
-  else{
-	var superJump = false;
+  var superJump = localStorage.getItem("superJump");
+  superJump = JSON.parse(superJump);
+} 
+else{
+  var superJump = false;
 }
 if(localStorage.getItem("doublejump") != null){
-    var doublejump = localStorage.getItem("doublejump");
-    doublejump = JSON.parse(superJump);
-  } 
-  else{
-    var doublejump = false;
-  }
+  var doublejump = localStorage.getItem("doublejump");
+  doublejump = JSON.parse(doublejump);
+} 
+else{
+  var doublejump = false;
+}
 
 let player;
 // tilemap properties;
 let levelselect, outermap, spikesr, spikesl, outermapcornerTR, outermapcornerTL, outermapcornerBL, outermapcornerBR, placeholder, entry, spawntile, parallax, base, backgroundoverlay, stone;
 // preload variables
-let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet, grassblocki, mudblocki, stoneblocki, ssheet2;
+let outermapimage, spikesimage, outermapcornerimage, parallaximg, bgoverlay, ssheet, grassblocki, mudblocki, stoneblocki, ssheet2, acidblocki;
 // assigning booleans
 let horizontalmove, verticalmove, idle, dashcooldown, shiftmove;
 dashcooldown = false;
@@ -57,11 +61,15 @@ let star, stari;
 let beavo;
 let doublejumpcooldown = false;
 let doublejumpobject;
-
+let bbottom;
+let acid, acidi;
+let healthbar, healthbarcoverer, healthi, healthinit = false;
+let b;
 
 
 function preload(){
 
+	healthi = loadImage("spriteassets/healthbar.png");
 	stari = loadImage("spriteassets/star.png")
 	mudblocki = loadImage("level1assets/grasstopmudbottom.png");
 	grassblocki = loadImage("level1assets/dirt.png");
@@ -76,6 +84,8 @@ function preload(){
 	spritesheet01i = loadImage("spriteassets/samurai.png");
 	sli = loadImage("level1assets/stoneleft.png");
 	rsi = loadImage("level1assets/rightstone.png");
+	acidtilemap = loadImage("level1assets/acidtilemap.png")
+	acidblocki = loadImage("level1assets/acidblocki.png");
 
 }
 
@@ -124,6 +134,7 @@ function setup(){
 	parallax.w = 1;
 	parallax.h = windowHeight;
 	parallax.debug = false;
+	parallax.layer = 0;
 
 	backgroundoverlay = new Sprite();
 	backgroundoverlay.img = bgoverlay;
@@ -133,13 +144,14 @@ function setup(){
 	backgroundoverlay.w = 1;
 	backgroundoverlay.h = windowHeight/2;
 	backgroundoverlay.debug = false;
+	backgroundoverlay.layer = 0;
 
 	sl = new Group();
 	sl.w = 24;
 	sl.h = 24;
 	sl.img = sli;
 	sl.tile = '/';
-	sl.scale = 0.6666666666666666667
+	sl.scale = 1 
 	sl.rotationLock = true;
 	sl.collider = "s";
 
@@ -148,7 +160,7 @@ function setup(){
 	rs.h = 24;
 	rs.img = rsi;
 	rs.tile = 'M';
-	rs.scale = 0.6666666666666666667
+	rs.scale = 1
 	rs.rotationLock = true;
 	rs.collider = "s";
 
@@ -173,7 +185,7 @@ function setup(){
 	stone.w = 24;
 	stone.h = 24;
 	stone.img = grassblocki;
-	stone.scale = 0.66666666666666666666666667;
+	stone.scale = 1;
 	stone.tile = 'a';
 	stone.rotationLock = true;
 	stone.collider = "s";
@@ -262,6 +274,15 @@ function setup(){
 	infrontofentry.rotationLock = true;
 	infrontofentry.collider = "n";
 
+	infrontofentry3 = new Group();
+	infrontofentry3.w = 16;
+	infrontofentry3.h = 16;
+	infrontofentry3.scale = 1;
+	infrontofentry3.color = "orange";
+	infrontofentry3.tile = '7';
+	infrontofentry3.rotationLock = true;
+	infrontofentry3.collider = "n";
+
 	entry = new Group();
 	entry.w = 16;
 	entry.h = 16;
@@ -326,19 +347,41 @@ function setup(){
 	star.collider = "s";
 	star.layer = 3;
 
+	acidblock = new Group();
+	acidblock.w = 24;
+	acidblock.h = 24;
+	acidblock.collider = "s";
+	acidblock.color = "#34AD00";
+	acidblock.tile = "I";
+	acidblock.img = acidblocki
+	acidblock.layer = 2;
+
+	acid = new Group();
+	acid.w = 24;
+	acid.h = 24;
+	acid.spriteSheet = acidtilemap;
+	acid.addAnis({
+    	acids: {row:0, frames:4},
+  	})
+	acid.tile = '9';
+	acid.friction = 0;
+	acid.rotationLock = true;
+	acid.collider = "s";
+	acid.layer = 3;
+
 	beavo = new Group();
 
 	levelselect = new Tiles(
-		[	"aM............................................../a",
-			"aM............................................../a",
-			"aM............................................../a",
-			"aM............................................../a",
-			"aM............................................../aa",
+		[	"aaM............................................./aa",
 			"aaM............................................./aa",
 			"aaM............................................./aa",
 			"aaM............................................./aa",
 			"aaM............................................./aa",
-			"aaM..........0............................s...../aa",
+			"aaM............................................./aa",
+			"aaM............................................./aa",
+			"aaM............................................./aa",
+			"aaM..........0................................../aa",
+			"aaM.......................................s...../aa",
 			"aaM...ggggggggggggggggggggggggggggggggggggggggggaaa",
 			"aaM...mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmaaa",
 			"aaM...mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmaaa",
@@ -349,35 +392,35 @@ function setup(){
 			"bbbJ..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
 			"bbbJ..bbbbbbbbbbz.................xbbbbbbb",
 			"bbbJ..bbbbbbbbbz...................xbbbbbbb",
-			"bbbb...bbbbbbbbz.....................xbbbbbbbb",
-			"bbbb...bbbbbbbz.......................bbbbbb",
-			"bbbb....bbbbbE.........................EEEEEE",
-			"bbbb...cbbbbbE.........................EEEEEE",
-			"bbbb...bbbbbbE.........................bbbbbb",
-			"bbbb...bbbbbbE.........................bbbbbb",
-			"bbbb...bbbbbbE.......0.................bbbbbb",
-			"bbbb..cbbbbbbbbbbbbbbbbbbb..............bbbbb",
-			"bbbbz..bbbbbbbbbbbbbbbbbbz..........cb..ooooo",
-			"bbbb...bbbbbbbbz....................bb..ooooo",
-			"bbbb...bbbbbbbz...........t.........bb..ooooo",
-			"bbbb...bbbbbbb......................bbbbbbbbb",
-			"bbbb...bbbbbbb...............0......xbbbbbbbb",
-			"bbb...jbbbbbbb..............cbbZ..........bbbbb",
-			"bbz...jbbbbbbb..............bbbb..........bbbbb",
-			"bb....jbbbbbbb..............bbbb..........bbbbb",
-			"bb..........................bbbb..........bbbbb",
-			"bb..........................bbbb..........bbbbb",
-			"bb..........................bbbb..........bbbbb",
-			"bb.................0........bbbbZ.........bbbbb",
-			"bb.......cbbZ....bbbbbZ....cbbbbbbbbbbbbbbbbb",
-			"bbbbb....bbbbppppbbbbbb....bbbbbbbbbbbbbbbbbb",
-			"bbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
-			"bbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
-			"bbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
-			"bbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
-			"bbbbbUUUUbbbbppppbbbbbbUUUUbbbbbbbbbbbbbbbbbb",
-			"bbbbbEEEEbbbbrrrrbbbbbbllllbbbbbbbbbbbbbbbbbb",
-			"bbbbbEEEEbbbbrrrrbbbbbbllllbbbbbbbbbbbbbbbbbb",
+			"bbb....bbbbbbbbz.....................xbbbbbbbb",
+			"bbb....bbbbbbbz.......................bbbbbb",
+			"bbb....bbbbbbz.........................bbbbbb",
+			"bbb....bbbbbo..........................bbbbbb",
+			"bbb....bbbbbo..........................bbbbbb",
+			"bbb....bbbbbo..........................bbbbbb",
+			"bbbZ...bbbbbo..........................bbbbbb",
+			"bbbb...bbbbbbbbbbbbbbbbbbb..............bbbbb",
+			"bbbz...bbbbbbbbbbbbbbbbbbz..........cb..bbbbb",
+			"bbb....bbbbbbbbz....................bb..bbbbb",
+			"bbb....bbbbbbbz..........t..........bb..bbbbb",
+			"bbb....bbbbbbb......................bbbbbbbbb",
+			"bbb....bbbbbbb...............0......xbbbbbbbb",
+			"bbb...jbbbbbbb..............cbbZ..........bbb",
+			"bbz...jbbbbbbb..............bbbb..........bbb",
+			"bb....jbbbbbbb..............bbbb..........bbb",
+			"bb..........................bbbb..........bbb",
+			"bb..........................bbbb..........bbb",
+			"bb..........................bbbb..........bbb",
+			"bb.................0........bbbbZ.........bbb",
+			"bb.......bb......bbbbbZ....bbbbbbbbb7777bbbbb",
+			"bbbbb....bb999999bbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbUUUUbbIIIIIIbbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbUUUUbbIIIIIIbbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbUUUUbbIIIIIIbbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbUUUUbbIIIIIIbbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbUUUUbbIIIIIIbbbbbbppppbbbbbbbbb7777bbbbb",
+			"bbbbbEEEEbbbbbbbbbbbbbbrrrrbbbbbbbbbllllbbbbb",
+			"bbbbbEEEEbbbbbbbbbbbbbbrrrrbbbbbbbbbllllbbbbb",
 		],
 		0, 0,
 		16, 16
@@ -386,6 +429,18 @@ function setup(){
 	playersetup();
 	player.overlaps(parallax)
 	player.overlaps(backgroundoverlay)
+
+	healthbar = new Sprite();
+	healthbar.w = 335;
+	healthbar.h = 56;
+	healthbar.img = healthi;
+	healthbar.scale = 0.20;
+	healthbar.color = "green";
+	healthbar.rotationLock = true;
+	healthbar.collider = "s";
+	// healthbar.textSize = 4;
+	healthbar.layer = "HUD";
+	healthbar.layer = 200;
 
 	for(s of spawntile){
 		player.x = s.x;
@@ -396,6 +451,21 @@ function setup(){
 		backgroundoverlay.x = p.x;
 		backgroundoverlay.y = 500;
 	}
+
+	for(a of acid){
+		if(a.friction == 0){
+			a.changeAni("acids")
+			a.friction = 10;
+			a.height = 20;
+			a.anis.offset.y = -7;
+		}
+	}
+
+	b = new Sprite(-100, -100, 75, 50, "s");
+	b.text = "Respawn!"
+	b.color = "gray";
+	b.textSize = 3;
+	b.visible = false;
 
 
 	outermap.debug = false;
@@ -415,6 +485,7 @@ function draw() {
 	parallaxchanger();
 	spritesheetset()
 	levelloader()
+	updateHealthBar();
 
 }
 
@@ -505,6 +576,61 @@ function movements(){
 }
 
 function spritesheetset(){
+	if(player.y > 3000){
+		player.health = 0;
+	}
+
+	for(a of acid){
+		if(player.overlapping(a)){
+			player.health -= 10;
+			player.changeAni("hit")
+		}
+	}
+
+	if(player.health <= 0){
+		player.changeAni("death")
+		if(!ran){
+			world.timeScale = 0;
+
+			let bean = new Sprite(player.x, player.y, windowWidth/2, windowHeight/2, "s");
+			bean.color = "red";
+			bean.opacity = 0.5;
+			bean.layer = 20000;
+
+			// window.location.href = "level1.html"
+			ran = true;
+
+			b.x = player.x;
+			b.y = player.y;
+
+			b.layer = 20001;
+
+			b.visible = true;
+		}
+		if(ran){
+			if(b){
+				if(b.mouse.hovering()){
+					b.color = "red";
+					b.textColor = "white";
+					mouse.cursor = "pointer";
+				}
+				if(!b.mouse.hovering()){
+					b.color = "gray";
+					b.textColor = "black";
+					mouse.cursor = "default";
+				}
+
+				if(b.mouse.pressed()){
+					b.color = "red";
+					b.textColor = "white";
+					mouse.cursor = "pointer";
+
+					window.location.href = window.location.href;
+				}
+			}
+		}
+	}
+
 	for(s of star){
 		if(player.overlaps(s)){
 			s.remove();
@@ -688,6 +814,36 @@ function levelloader(){
 		// set coin count
 		localStorage.setItem("stars", stars);
 	}
+	if(player.colliding(entry2)){
+		window.location.href = "level3.html";
+
+		localStorage.setItem("stars", stars);
+	}
+}
+
+function updateHealthBar() {
+    if (!healthbar || !healthcoverer || !player) return; // Prevent undefined errors
+
+    healthbar.x = camera.x - 100;
+    healthbar.y = camera.y - 85;
+
+    // Ensure health stays between 0 and 100
+
+    // Calculate the width for the healthcoverer based on missing health
+    // This should represent the portion of the bar that is empty
+	if((player.health < 100) && (player.health > 0)){
+    	healthcoverer.w = 100 - player.health;
+	}
+    
+    // Position the coverer at the right portion of the health bar
+    // Starting from where the remaining health ends
+    healthcoverer.x = healthbar.x + (player.health / 2) - 17.5;
+    healthcoverer.y = healthbar.y;
+
+    // Only show the coverer if health is less than 100%
+	if(player.health < 100){
+		healthcoverer.visible = true;
+	}
 }
 
 function pausefeature(){
@@ -695,7 +851,21 @@ function pausefeature(){
   
   let btop;
   let bmiddle;
-  let bbottom;
+
+  if(bbottom){
+	if(bbottom.mouse.hovering()){
+	  bbottom.color = "green";
+	  bbottom.textColor = "white";
+	}
+	else{
+	  bbottom.color = "yellow";
+	  bbottom.textColor = "black";
+	}
+  
+	if(bbottom.mouse.pressed()){
+	  window.location.href = "index.html";
+	}
+}
 
   
 	if(kb.presses("p")){
@@ -733,21 +903,6 @@ function pausefeature(){
 			bbottom.textSize = 3;
 			bbottom.text = "Menu!";
 			beavo.add(bbottom); // Add to group
-
-			if(bbottom){
-				if(bbottom.mouse.hovering()){
-				  bbottom.color = "green";
-				  bbottom.textColor = "white";
-				}
-				else{
-				  bbottom.color = "yellow";
-				  bbottom.textColor = "black";
-				}
-			  
-				if(bbottom.mouse.pressed()){
-				  window.location.href = "hub.html";
-				}
-			}
 		}
 	}
   }

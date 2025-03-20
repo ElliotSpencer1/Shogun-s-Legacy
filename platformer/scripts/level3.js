@@ -3,11 +3,17 @@ if(localStorage.getItem("dash") != null){
 	var dashmove = localStorage.getItem("dash");
 	dashmove = JSON.parse(dashmove);
 	console.log(dashmove)
-  }
+}
+else{
+  var dashmove = false;
+}
 if(localStorage.getItem("walljump") != null){
 	var walljump = localStorage.getItem("walljump");
 	walljump = JSON.parse(walljump);
 	console.log(walljump)
+}
+else{
+  var walljump = false;
 }
 if(localStorage.getItem("stars") != null){
 	var stars = localStorage.getItem("stars");
@@ -15,8 +21,6 @@ if(localStorage.getItem("stars") != null){
 	console.log(stars)
 }
 else{
-	var walljump = false;
-	var dashmove = false;
 	var stars = 0;
 }
 if(localStorage.getItem("superJump") != null){
@@ -27,12 +31,12 @@ else{
   var superJump = false;
 }
 if(localStorage.getItem("doublejump") != null){
-    var doublejump = localStorage.getItem("doublejump");
-    doublejump = JSON.parse(doublejump);
-  } 
-  else{
-    var doublejump = false;
-  }
+  var doublejump = localStorage.getItem("doublejump");
+  doublejump = JSON.parse(doublejump);
+} 
+else{
+  var doublejump = false;
+}
 
  
 let player, base;
@@ -61,6 +65,7 @@ let beavo;
 let b;
 let doublejumpcooldown = false;
 let doublejumpobject;
+let bbottom;
 
 function preload(){
   stari = loadImage("spriteassets/star.png"); // Make sure to add this image or use an existing one
@@ -161,6 +166,13 @@ function playersetup(){
 function setup(){
   createCanvas(windowWidth, windowHeight); 
   
+  if(!doublejump){
+		doublejump = false;
+	}
+	else{
+		doublejump = true;
+	}
+
   // Setup groups and game objects
   enemysetup();
 
@@ -530,7 +542,7 @@ function setup(){
         "hhr.............................Mhr............Mhh",
         "hhr.............................Mhrw...........Mhh",
         "hhr.............................Mhhfff.........Mhh",
-        "hhr..00.........................MhhUTO.........Mhh",
+        "hhr..00.........................MhhTTO.........Mhh",
         "hhr.ffff....L...................Mhr............Mhh",
         "hhr.UTTO....L...................Mhr............Mhh",
         "hhr......L..L...................Mhr............Mhh",
@@ -540,8 +552,8 @@ function setup(){
         "hhr.............................Mhr............Mhh",
         "hhr.......9....0.../............Mhr.........ff.Mhh",
         "hhr....fffffffffffffffffffff....Mhr.........UO.Mhh",
-        "hhr....MhhTTTTTTTTTTTTTTTTTO....Mhr........L...Mhh",
-        "hhr....Mhr......................Mhr.ff.L...L...Mhh",
+        "hhr....MhhTTTTTTTTTTTTTTTTTO....Mhr........f...Mhh",
+        "hhr....Mhr......................Mhr.ff.f...L...Mhh",
         "hhr....Mhr......................Mhr.UO.L...L...Mhh",
         "hhr....Mhr......................Mhr....L...L...Mhh",
         "hhr....Mhr......................Mhr....L...L...Mhh",
@@ -563,7 +575,7 @@ function setup(){
         "hhr....Mhr.........f.......................L...Mhh",
         "hhr....Mhr.........h.......................L...Mhh",
         "hhr....Mhr.........h...f....0....fffffff...L...Mhh",
-        "hhr....Mhr.............h....f....UhhhhhO...L...Mhh",
+        "hhr....Mhr.............h....f....UhhhhhL...L...Mhh",
         "hhr....Mhr..................h..........L...L...Mhh",
         "hhr....Mhr.............................L...L...Mhh",
         "hhr....Mhr.............................L...L...Mhh",
@@ -1176,7 +1188,6 @@ function pausefeature(){
 
 let btop;
 let bmiddle;
-let bbottom;
 
 if(bbottom){
   if(bbottom.mouse.hovering()){
