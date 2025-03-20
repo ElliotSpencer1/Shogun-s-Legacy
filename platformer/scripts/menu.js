@@ -21,6 +21,7 @@ let enemy, enemyi, enemyspawntile, enemyattacking = false, move = true;
 let attacktimeout = false, attackcd = false;
 let notstarted = true;
 let scores;
+let settingsopen = false;
 
 function preload(){
 
@@ -174,6 +175,10 @@ function backgroundanimation(){
       "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
       "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
       "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
 		],
 		0, 0,
 		35, 35
@@ -273,7 +278,7 @@ function setup(){
   loadbutton.textSize = 40;
   loadbutton.collider = "s";
 
-  scores = new Sprite(windowWidth/2 - windowWidth/2, windowHeight/2, 200, 50); 
+  scores = new Sprite(windowWidth/2 - windowWidth/3, windowHeight/2, 200, 50); 
   scores.scale = (1.5);
   scores.text = " ";
   scores.textSize = 40;
@@ -312,6 +317,7 @@ function setup(){
     player.overlaps(soundplus);
     player.overlaps(titlebar);
     player.overlaps(instructions);
+    player.overlaps(settingsback);
   }
 
 }
@@ -324,80 +330,99 @@ function draw() {
 }
 
 function buttoninteractions(){
-  if(playbutton.mouse.pressing()){
-    playbutton.image = bluebarpressedi;
-  }
-  else if(loadbutton.mouse.pressing()){
-    loadbutton.image = bluebarpressedi;
-  }
-  else if(settings.mouse.pressing()){
-    settings.image = bluebarpressedi;
+  if(!settingsopen){
+    if(playbutton.mouse.pressing()){
+      playbutton.image = bluebarpressedi;
+    }
+    else if(loadbutton.mouse.pressing()){
+      loadbutton.image = bluebarpressedi;
+    }
+    else if(settings.mouse.pressing()){
+      settings.image = bluebarpressedi;
+    }
+    else{
+      playbutton.image = bluebari;
+      loadbutton.image = bluebari;
+      settings.image = bluebari;
+    }
+  
+    if(playbutton.mouse.pressed()){
+        window.location.href = "hub.html";
+        localStorage.setItem("soundval", soundval);
+    }
+    if(loadbutton.mouse.pressed()){
+        window.location.href = "";
+        localStorage.setItem("soundval", soundval);
+        // localstorage stuff
+    }
+    if(settings.mouse.pressed()){
+        // popup settings menu
+        playbutton.visible = false;
+        loadbutton.visible = false;
+        settings.visible = false;
+        playbutton.collider = "n";
+        loadbutton.collider = "n";
+        settings.collider = "n";
+        instructions.visible = false;
+        instructions.collider = "n";
+        scores.visible = false;
+        scores.collider = "n";
+  
+        sounddisplay.visible = true;
+        sounddisplay.collider = "s";
+        soundplus.visible = true;
+        soundplus.collider = "s";
+        soundminus.visible = true;
+        soundminus.collider = "s";
+        settingsback.visible = true;
+        settingsback.collider = "s";
+        sounddisplayclose.visible = true;
+        sounddisplayclose.collider = "s";
+
+        settingsopen = true;
+        
+    }
   }
   else{
-    playbutton.image = bluebari;
-    loadbutton.image = bluebari;
-    settings.image = bluebari;
+    if((soundplus.mouse.pressed()) && (soundval < 200)){
+      soundval += 20;
+      sounddisplay.text = soundval  + "%";
+    }
+  
+    if((soundminus.mouse.pressed()) && (soundval > 0)){
+      soundval -= 20;
+      sounddisplay.text = soundval + "%";
+    }
+  
+    if(sounddisplayclose.mouse.pressed()){
+      sounddisplay.visible = false;
+      sounddisplay.collider = "n";
+      soundplus.visible = false;
+      soundplus.collider = "n";
+      soundminus.visible = false;
+      soundminus.collider = "n";
+      settingsback.visible = false;
+      settingsback.collider = "n";
+      sounddisplayclose.visible = false;
+      sounddisplay.collider = "n";
+  
+      playbutton.visible = true;
+      loadbutton.visible = true;
+      settings.visible = true;
+      playbutton.collider = "s";
+      loadbutton.collider = "s";
+      settings.collider = "s";
+      instructions.visible = true;
+      instructions.collider = "s";
+      scores.visible = true;
+      scores.collider = "s";
+      
+      settingsopen = false;
+    }
   }
 
-  if(playbutton.mouse.pressed()){
-      window.location.href = "hub.html";
-      localStorage.setItem("soundval", soundval);
-  }
-  if(loadbutton.mouse.pressed()){
-      window.location.href = "";
-      localStorage.setItem("soundval", soundval);
-      // localstorage stuff
-  }
-  if(settings.mouse.pressed()){
-      // popup settings menu
-      playbutton.visible = false;
-      loadbutton.visible = false;
-      settings.visible = false;
-      playbutton.collider = "n";
-      loadbutton.collider = "n";
-      settings.collider = "n";
 
-      sounddisplay.visible = true;
-      sounddisplay.collider = "s";
-      soundplus.visible = true;
-      soundplus.collider = "s";
-      soundminus.visible = true;
-      soundminus.collider = "s";
-      settingsback.visible = true;
-      settingsback.collider = "s";
-      sounddisplayclose.visible = true;
-      sounddisplayclose.collider = "s";
-  }
 
-  if((soundplus.mouse.pressed()) && (soundval < 200)){
-    soundval += 20;
-    sounddisplay.text = soundval  + "%";
-  }
-
-  if((soundminus.mouse.pressed()) && (soundval > 0)){
-    soundval -= 20;
-    sounddisplay.text = soundval + "%";
-  }
-
-  if(sounddisplayclose.mouse.pressed()){
-    sounddisplay.visible = false;
-    sounddisplay.collider = "n";
-    soundplus.visible = false;
-    soundplus.collider = "n";
-    soundminus.visible = false;
-    soundminus.collider = "n";
-    settingsback.visible = false;
-    settingsback.collider = "n";
-    sounddisplayclose.visible = false;
-    sounddisplay.collider = "n";
-
-    playbutton.visible = true;
-    loadbutton.visible = true;
-    settings.visible = true;
-    playbutton.collider = "s";
-    loadbutton.collider = "s";
-    settings.collider = "s";
-  }
 
 }
 
