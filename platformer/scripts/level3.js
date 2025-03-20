@@ -28,7 +28,7 @@ else{
 }
 if(localStorage.getItem("doublejump") != null){
     var doublejump = localStorage.getItem("doublejump");
-    doublejump = JSON.parse(superJump);
+    doublejump = JSON.parse(doublejump);
   } 
   else{
     var doublejump = false;

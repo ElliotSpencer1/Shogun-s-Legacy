@@ -1,3 +1,39 @@
+if(localStorage.getItem("dash") != null){
+	console.log(localStorage.getItem("dash"))
+	var dashmove = localStorage.getItem("dash");
+	dashmove = JSON.parse(dashmove);
+	console.log(dashmove)
+  }
+if(localStorage.getItem("walljump") != null){
+	var walljump = localStorage.getItem("walljump");
+	walljump = JSON.parse(walljump);
+	console.log(walljump)
+}
+if(localStorage.getItem("stars") != null){
+	var stars = localStorage.getItem("stars");
+	stars = parseInt(stars);
+	console.log(stars)
+}
+else{
+	var walljump = false;
+	var dashmove = false;
+	var stars = 0;
+}
+if(localStorage.getItem("superJump") != null){
+  var superJump = localStorage.getItem("superJump");
+  superJump = JSON.parse(superJump);
+} 
+else{
+  var superJump = false;
+}
+if(localStorage.getItem("doublejump") != null){
+  var doublejump = localStorage.getItem("doublejump");
+  doublejump = JSON.parse(doublejump);
+} 
+else{
+  var doublejump = false;
+}
+
 let titlebar, playbutton, loadbutton, settings, bgoverlay, settingsback, soundplus, soundminus, sounddisplay, cracktexture, sounddisplayclose, instructions;
 // images for the above objects
 let titlebari, bluebari, bluebarpressedi, backgroundi, settingsbacki, cracktexturei, arli, arri;
@@ -9,8 +45,6 @@ let player, base;
 let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
 let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
 let storytimeout, storybean, storybean2, healthbar, healthi, healthinit = false;
-let walljump = false;
-let dashmove = false;
 let wallcooldown = false;
 let generalcd = false, attack1cd = false, attack2cd = false, attack3cd = false, attack1timeout = false, attack2timeout = false, attack3timeout = false, ran = false, attacking = false;
 let maxHearts = 10;
@@ -231,7 +265,7 @@ function setup(){
   settingsback.visible = false;
 
   instructions = new Sprite(windowWidth/2 + windowWidth/4, windowHeight/2, 400, 400, "s");
-  instructions.text = "W to jump \n  \nA to go left \n \nD to go right \n \nIf these moves have been unlocked these are the keybinds: \n \nE & a movement direction to dash \n \nQ to SuperJump \n \n C to double jump or to jump mid air \n \n Left Click to attack"
+  instructions.text = "W to jump \n  \nA to go left \n \nD to go right \n \nIf these moves have been unlocked these are the keybinds: \n \nE & a movement direction to dash \n \nQ to SuperJump \n \n C to double jump or to jump mid air \n \n Left Click to attack \n \n Press P to pause"
   instructions.textSize = 15;
   instructions.color = "grey";
 
@@ -267,7 +301,7 @@ function setup(){
   playbutton = new Sprite(windowWidth/2, windowHeight/2 - 100, 200, 50);
   playbutton.image = (bluebari);
   playbutton.scale = (1.5);
-  playbutton.text = "Play!";
+  playbutton.text = "New Game!";
   playbutton.textSize = 40;
   playbutton.collider = "s";
 
@@ -278,11 +312,10 @@ function setup(){
   loadbutton.textSize = 40;
   loadbutton.collider = "s";
 
-  scores = new Sprite(windowWidth/2 - windowWidth/3, windowHeight/2, 200, 50); 
-  scores.scale = (1.5);
-  scores.text = " ";
-  scores.textSize = 40;
-  scores.collider = "s";
+  scores = new Sprite(windowWidth/2 - windowWidth/3, windowHeight/2 + windowHeight/8, 400, 400, "s"); 
+  scores.color = "gray";
+  scores.text = "Stars Collected: " + stars + "! \n \n Dash: " + dashmove + "! \n \n WallJump: " + walljump + "! \n \n SuperJump: " + superJump + "! \n \n DoubleJump: " + doublejump;
+  scores.textSize = 17;
 
   settings = new Sprite(windowWidth/2, windowHeight/2 + 100, 200, 50);
   settings.image = (bluebari);
@@ -318,6 +351,7 @@ function setup(){
     player.overlaps(titlebar);
     player.overlaps(instructions);
     player.overlaps(settingsback);
+    player.overlaps(scores);
   }
 
 }
@@ -349,11 +383,11 @@ function buttoninteractions(){
     if(playbutton.mouse.pressed()){
         window.location.href = "hub.html";
         localStorage.setItem("soundval", soundval);
+        localStorage.clear();
     }
     if(loadbutton.mouse.pressed()){
         window.location.href = "";
         localStorage.setItem("soundval", soundval);
-        // localstorage stuff
     }
     if(settings.mouse.pressed()){
         // popup settings menu
