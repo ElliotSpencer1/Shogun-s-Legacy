@@ -4,9 +4,30 @@ let titlebari, bluebari, bluebarpressedi, backgroundi, settingsbacki, cracktextu
 // values
 let soundval;
 let bg1i, bg2i, bg3i, bg1, bg2, bg3;
+let di, gtmbi, rsi, sli, levelselect;
+let player, base;
+let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
+let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
+let storytimeout, storybean, storybean2, healthbar, healthi, healthinit = false;
+let walljump = false;
+let dashmove = false;
+let wallcooldown = false;
+let generalcd = false, attack1cd = false, attack2cd = false, attack3cd = false, attack1timeout = false, attack2timeout = false, attack3timeout = false, ran = false, attacking = false;
+let maxHearts = 10;
+let heartSprites = []; // Array to store heart sprites
+let heartsToShow = 10;
+let healthcoverer;
+let enemy, enemyi, enemyspawntile, enemyattacking = false, move = true;
+let attacktimeout = false, attackcd = false;
+let notstarted = true;
 
 function preload(){
 
+    sli = loadImage("level1assets/stoneleft.png");
+    rsi = loadImage("level1assets/rightstone.png");
+    spritesheet01i = loadImage("spriteassets/samurai.png");
+    gtmbi = loadImage("level1assets/grasstopmudbottom.png");
+    di = loadImage("level1assets/dirt.png");
     titlebari = loadImage("assets/buttonLong_grey.png");
     bluebari = loadImage("assets/buttonLong_blue.png");
     bluebarpressedi = loadImage("assets/buttonLong_blue_pressed.png");
@@ -19,18 +40,52 @@ function preload(){
     bg1i = loadImage("level1assets/background_layer_1.png")
     bg2i = loadImage("level1assets/background_layer_2.png")
     bg3i = loadImage("level1assets/background_layer_3.png")
+    spritesheet01i = loadImage("spriteassets/samurai.png");
+
+}
+
+function playersetup(){
+	player = new Sprite(0,0, 68, 68, "d")
+	player.rotationLock = true;
+	player.layer = 200
+	player.spriteSheet = spritesheet01i;
+	player.anis.frameDelay = 6;
+	player.addAnis({
+		attack1:{row:6, frames:6},
+		attack2:{row:7, frames:5},
+		attack3:{row:8, frames:5},
+		hit:{row:1, frames: 4},
+    	Rollleft: {row:3, frames:7},
+    	Rollright: {row:4, frames:7},
+    	moveLeft: {row:1, frames:7},
+    	moveRight: {row:4, frames:8},
+		jumpright:{row:3, frames:3},
+    	death:{row:0, frames:10},
+		idle:{row:2, frames:5}
+  	})
+	player.changeAni("idle")
+	// player.scale 
+	player.width = 30;
+	player.height = 40;
+	player.anis.offset.y = -11.5;
+	player.bounciness = 0;
+	player.friction = 5;
+	player.health = 100;
 
 }
 
 function backgroundsetup(){
   bg1 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   bg1.img = bg1i;
+  bg1.layer = 0;
 
   bg2 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   bg2.img = bg2i;
+  bg2.layer = 0;
 
   bg3 = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   bg3.img = bg3i;
+  bg3.layer = 0;
 
   let scaleval = windowHeight / 140;
 
@@ -41,8 +96,100 @@ function backgroundsetup(){
   console.log("ran")
 }
 
+function backgroundanimation(){
+
+  sl = new Group();
+	sl.w = 24;
+	sl.h = 24;
+	sl.img = sli;
+	sl.tile = 'M';
+	sl.rotationLock = true;
+	sl.collider = "s";
+  sl.scale = 1.5;
+
+	rs = new Group();
+	rs.w = 24;
+	rs.h = 24;
+	rs.img = rsi;
+	rs.tile = 'r';
+	rs.rotationLock = true;
+	rs.collider = "s";
+  rs.scale = 1.5;
+
+	mpp = new Group();
+	mpp.w = 24;
+	mpp.h = 24;
+	mpp.img = gtmbi;
+	mpp.tile = 'f';
+	mpp.rotationLock = true;
+	mpp.collider = "s";
+  mpp.scale = 1.5;
+
+  mbr = new Group();
+	mbr.w = 24;
+	mbr.h = 24;
+	mbr.img = di;
+	mbr.tile = 'h';
+	mbr.rotationLock = true;
+	mbr.collider = "s";
+  mbr.scale = 1.5;
+
+  spawntile = new Group();
+	spawntile.w = 24;
+	spawntile.h = 24;
+	spawntile.tile = 'Y';
+	spawntile.rotationLock = true;
+	spawntile.visible = false;
+	spawntile.collider = "n";
+  spawntile.scale = 1.5;
+
+  levelselect = new Tiles(
+		[	"........................................................",
+			"........................................................",
+			"........................................................",
+			"........................................................",
+			"........................................................",
+			"........................................................",
+			"........................................................",
+			"Y.......................................................",
+			"ffffffffffffffffff......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr......................................",
+			"hhhhhhhhhhhhhhhhhr...fffffffffffffffffffffffffffffffffff",
+			"hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+			"hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+			"hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+			"hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+      "hhhhhhhhhhhhhhhhhr...Mhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+		],
+		0, 0,
+		35, 35
+
+    
+	);  
+
+  for(s of spawntile){
+    player.x = s.x;
+    player.y = s.y;
+}
+}
+
 function setup(){
   createCanvas(windowWidth, windowHeight);
+
+  world.gravity.y = 9.812;
 
   if(!localStorage.getItem("soundval")){
     soundval = 100;
@@ -51,12 +198,14 @@ function setup(){
     soundval = localStorage.getItem("soundval");
   }
 
-  bgoverlay = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
+  // bgoverlay = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   // bgoverlay.image = backgroundi;
   // bgoverlay.scale = 
-  bgoverlay.color = "#141414";
+  // bgoverlay.color = "#141414";
 
+  playersetup();
   backgroundsetup();
+  backgroundanimation();
 
   // cracktexture = new Sprite(windowWidth/2, windowHeight/2, windowWidth, windowHeight, "s");
   // cracktexture.image = cracktexturei;
@@ -123,15 +272,42 @@ function setup(){
   settings.scale = (1.5);
   settings.text = "Settings!";
   settings.textSize = 40;
+
   settings.collider = "s";
+
+  console.log("Player:", player);
+  console.log("bg1:", bg1);
+  console.log("bg2:", bg2);
+  console.log("bg3:", bg3);
+  console.log("Play Button:", playbutton);
+  console.log("Settings:", settings);
+  console.log("Load Button:", loadbutton);
+  console.log("Sound Display Close:", sounddisplayclose);
+  console.log("Sound Minus:", soundminus);
+  console.log("Sound Plus:", soundplus);
+  console.log("Title Bar:", titlebar);
+
+
+  if(player){
+    player.overlaps(bg1);
+    player.overlaps(bg2);
+    player.overlaps(bg3);
+    player.overlaps(playbutton);
+    player.overlaps(settings);
+    player.overlaps(loadbutton);
+    player.overlaps(sounddisplayclose);
+    player.overlaps(soundminus);
+    player.overlaps(soundplus);
+    player.overlaps(titlebar);
+  }
 
 }
 
 function draw() {
 	background("black");
 
-  buttoninteractions()
-
+  buttoninteractions();
+  playeranimations();
 }
 
 function buttoninteractions(){
@@ -210,4 +386,23 @@ function buttoninteractions(){
     settings.collider = "s";
   }
 
+}
+
+function playeranimations(){
+  if (player) {
+      if (player.y > windowHeight + 100) {  // If player falls off the map
+          for (s of spawntile) {  // Reset position using spawn tile
+              player.x = s.x;
+              player.y = s.y;
+          }
+      }
+      
+      // Move player to the right
+      player.vel.x = 4;
+      player.changeAni("moveRight");
+
+      // Update camera to follow player
+      // camera.x = player.x;
+      // camera.y = player.y;
+  }
 }

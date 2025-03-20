@@ -1,24 +1,56 @@
+if(localStorage.getItem("dash") != null){
+	console.log(localStorage.getItem("dash"))
+	var dashmove = localStorage.getItem("dash");
+	dashmove = JSON.parse(dashmove);
+	console.log(dashmove)
+  }
+if(localStorage.getItem("walljump") != null){
+	var walljump = localStorage.getItem("walljump");
+	walljump = JSON.parse(walljump);
+	console.log(walljump)
+}
+if(localStorage.getItem("stars") != null){
+	var stars = localStorage.getItem("stars");
+	stars = parseInt(stars);
+	console.log(stars)
+}
+else{
+	var walljump = false;
+	var dash = false;
+	var stars = 0;
+}
+if(localStorage.getItem("superJump") != null){
+	var superJump = localStorage.getItem("superJump");
+	superJump = JSON.parse(superJump);
+  } 
+  else{
+	var superJump = false;
+  }
+
 let player, base;
 let horizontalmove = false, verticalmove = false, idle = true, dashcooldown = false, shiftmove = false;
-let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slgr, srgl, ogle, sl, exittile, spawntile, acidpool, sidejump, dash, d, gtmb, mesbr, sltb, sltlb, sbmt, slc, acid, acidblock;
+let bg1, bg2, bg3, cbs, cts, gm, gs, gsb, mpp, mbl, mbr, mtl, mtr, ogre, rs, slgr, srgl, ogle, sl, exittile, spawntile, acidpool, sidejump, d, gtmb, mesbr, sltb, sltlb, sbmt, slc, acid, acidblock;
 // images for the above objects
 let bg1i, bg2i, bg3i, cbsi, ctsi, gmi, gsi, gsbi, mppi, mbli, mbri, mtli, mtri, ogrei, rsi, slgri, srgli, oglei, sli, di, gtmbi,mesbri, sltbi, sltlbi, sbmti, slci, acidtilemap, acidblocki, headeri, sidejumpi;
 // values
 let soundval;
 let spritesheet01i, spritesheet01, skillspritei, skillspritetile;
 let storytimeout, storybean, storybean2, healthbar, healthi, healthinit = false;
-let walljump = false;
-let dashmove = false;
 let wallcooldown = false;
 let generalcd = false, attack1cd = false, attack2cd = false, attack3cd = false, attack1timeout = false, attack2timeout = false, attack3timeout = false, ran = false, attacking = false;
 let maxHearts = 10;
 let heartSprites = []; // Array to store heart sprites
 let heartsToShow = 10;
 let healthcoverer;
-let enemy, enemyi, enemyspawntile, enemyattacking = false, moveleft = true, moveright = false;
+let enemy, enemyi, enemyspawntile, enemyattacking = false, move = true;
+let attacktimeout = false, attackcd = false, superjumpcooldown = false;
+let star, stari;
+let beavo;	
+let b;
 
 function preload(){
 
+  stari = loadImage("spriteassets/star.png")
   enemyi = loadImage("spriteassets/enemy.png");
   healthi = loadImage("spriteassets/healthbar.png");
   skillspritei = loadImage("spriteassets/skill.png");
@@ -118,20 +150,18 @@ function playersetup(){
 function setup(){
   createCanvas(windowWidth, windowHeight); 
 
+	beavo = new Group();
+
   	enemysetup();
 
-	setInterval(() => {
-		if(!enemyattacking){
-			if(moveleft){
-				moveright = true;
-				moveleft = false;
-			}
-			else{
-				moveright = false;
-				moveleft = true;
-			}
+	  setInterval(() => {
+		if(move){
+		  move = false;
 		}
-	}, 3000);
+		else{
+		  move = true;
+		}
+	  }, 5000)
 
 	base = 2;
 	world.gravity.y = 9.80665;
@@ -146,6 +176,7 @@ function setup(){
 	bg1.w = 1;
 	bg1.h = windowHeight;
 	bg1.debug = false;
+	bg1.layer = 0;
   
   	bg2 = new Sprite();
 	bg2.img = bg2i;
@@ -155,6 +186,7 @@ function setup(){
 	bg2.w = 1;
 	bg2.h = windowHeight;
 	bg2.debug = false;
+	bg2.layer = 0;
 
   	bg3 = new Sprite();
 	bg3.img = bg3i;
@@ -165,6 +197,7 @@ function setup(){
 	bg3.h = windowHeight;
 	bg3.debug = false;
 	bg3.offset.x = -50;
+	bg3.layer = 0;
 
  	cbs = new Group();
 	cbs.w = 24;
@@ -173,6 +206,7 @@ function setup(){
 	cbs.tile = 'Z';
 	cbs.rotationLock = true;
 	cbs.collider = "s";
+	cbs.layer = 0;
 
 	cts = new Group();
 	cts.w = 24;
@@ -181,6 +215,7 @@ function setup(){
 	cts.tile = 'z';
 	cts.rotationLock = true;
 	cts.collider = "s";
+	cts.layer = 0;
 
 	gm = new Group();
 	gm.w = 24;
@@ -189,11 +224,11 @@ function setup(){
 	gm.tile = 'k';
 	gm.rotationLock = true;
 	gm.collider = "s";
+	gm.layer = 0;
 
 	acid = new Group();
 	acid.w = 24;
 	acid.h = 24;
-	acid.debug = true;
 	acid.spriteSheet = acidtilemap;
 	acid.addAnis({
     	acids: {row:0, frames:4},
@@ -211,6 +246,7 @@ function setup(){
 	acidblock.color = "#34AD00";
 	acidblock.tile = "I";
 	acidblock.img = acidblocki
+	acidblock.layer = 0;
 
 	gs = new Group();
 	gs.w = 24;
@@ -219,6 +255,7 @@ function setup(){
 	gs.tile = 'p';
 	gs.rotationLock = true;
 	gs.collider = "s";
+	gs.layer = 0;
 
 	skillspritetile = new Group();
 	skillspritetile.w = 200;
@@ -235,7 +272,6 @@ function setup(){
 	skillspritetile.scale = 0.1;
 	skillspritetile.w = 20;
 	skillspritetile.h = 20;
-	// skillspritetile.debug = true;
 
 	gsb = new Group();
 	gsb.w = 24;
@@ -244,6 +280,7 @@ function setup(){
 	gsb.tile = 't';
 	gsb.rotationLock = true;
 	gsb.collider = "s";
+	gsb.layer = 0;
 
 	mpp = new Group();
 	mpp.w = 24;
@@ -252,6 +289,7 @@ function setup(){
 	mpp.tile = 'f';
 	mpp.rotationLock = true;
 	mpp.collider = "s";
+	mpp.layer = 0;
 
 	mbl = new Group();
 	mbl.w = 24;
@@ -260,6 +298,7 @@ function setup(){
 	mbl.tile = 'H';
 	mbl.rotationLock = true;
 	mbl.collider = "s";
+	mbl.layer = 0;
 
 	mbr = new Group();
 	mbr.w = 24;
@@ -268,6 +307,7 @@ function setup(){
 	mbr.tile = 'h';
 	mbr.rotationLock = true;
 	mbr.collider = "s";
+	mbr.layer = 0;
 
 	mtr = new Group();
 	mtr.w = 24;
@@ -276,6 +316,7 @@ function setup(){
 	mtr.tile = 'K';
 	mtr.rotationLock = true;
 	mtr.collider = "s";
+	mtr.layer = 0;
 
 	d = new Group();
 	d.w = 24;
@@ -284,6 +325,7 @@ function setup(){
 	d.tile = 't';
 	d.rotationLock = true;
 	d.collider = "s";
+	d.layer = 0;
 
 	mtl = new Group();
 	mtl.w = 24;
@@ -292,6 +334,7 @@ function setup(){
 	mtl.tile = 'l';
 	mtl.rotationLock = true;
 	mtl.collider = "s";	
+	mtl.layer = 0;
 	
 	ogre = new Group();
 	ogre.w = 24;
@@ -300,6 +343,7 @@ function setup(){
 	ogre.tile = 'u';
 	ogre.rotationLock = true;
 	ogre.collider = "s";	
+	ogre.layer = 0;
 
 	ogle = new Group();
 	ogle.w = 24;
@@ -308,6 +352,7 @@ function setup(){
 	ogle.tile = 'm';
 	ogle.rotationLock = true;
 	ogle.collider = "s";
+	ogle.layer = 0;
 
 	sl = new Group();
 	sl.w = 24;
@@ -316,6 +361,7 @@ function setup(){
 	sl.tile = 'M';
 	sl.rotationLock = true;
 	sl.collider = "s";
+	sl.layer = 0;
 
 	rs = new Group();
 	rs.w = 24;
@@ -324,6 +370,7 @@ function setup(){
 	rs.tile = 'r';
 	rs.rotationLock = true;
 	rs.collider = "s";
+	rs.layer = 0;
 
 	slgr = new Group();
 	slgr.w = 24;
@@ -332,6 +379,7 @@ function setup(){
 	slgr.tile = 'a';
 	slgr.rotationLock = true;
 	slgr.collider = "s";
+	slgr.layer = 0;
 
 	srgl = new Group();
 	srgl.w = 24;
@@ -340,6 +388,7 @@ function setup(){
 	srgl.tile = 'a';
 	srgl.rotationLock = true;
 	srgl.collider = "s";
+	srgl.layer = 0;
 
 	mesbr = new Group();
 	mesbr.w = 24;
@@ -348,6 +397,7 @@ function setup(){
 	mesbr.tile = 'O';
 	mesbr.rotationLock = true;
 	mesbr.collider = "s";
+	mesbr.layer = 0;
 
 	sltb = new Group();
 	sltb.w = 24;
@@ -356,6 +406,7 @@ function setup(){
 	sltb.tile = 'P';
 	sltb.rotationLock = true;
 	sltb.collider = "s";
+	sltb.layer = 0;
 
 	sltlb = new Group();
 	sltlb.w = 24;
@@ -364,6 +415,7 @@ function setup(){
 	sltlb.tile = 'X';
 	sltlb.rotationLock = true;
 	sltlb.collider = "s";
+	sltlb.layer = 0;
 
 	sbmt = new Group();
 	sbmt.w = 24;
@@ -372,6 +424,7 @@ function setup(){
 	sbmt.tile = 'T';
 	sbmt.rotationLock = true;
   	sbmt.collider = "s";
+	sbmt.layer = 0;
 
 	slc = new Group();
 	slc.w = 24;
@@ -380,6 +433,17 @@ function setup(){
 	slc.tile = 'U';
 	slc.rotationLock = true;
 	slc.collider = "s";
+	slc.layer = 0;
+
+	star = new Group();
+	star.w = 240;
+	star.h = 240;
+	star.img = stari;
+	star.scale = 0.05;
+	star.tile = '0';
+	star.rotationLock = true;
+	star.collider = "s";
+	star.layer = 3;
 
 	spawntile = new Group();
 	spawntile.w = 24;
@@ -413,8 +477,8 @@ function setup(){
 	dash.h = 200;
 	dash.spriteSheet = skillspritei;
 	dash.addAnis({
-    	skillthings: {row:0, frames:15},
-  	})
+		skillthings: {row:0, frames:15},
+	})
 	dash.friction = 0;
 	dash.rotationLock = true;
 	dash.collider = "S";
@@ -432,7 +496,6 @@ function setup(){
 	enemyspawntile.collider = "n";
 	enemyspawntile.visible = false;
 
-
 	levelselect = new Tiles(
 		[	"hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
 			"hhhhhrTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTMhhhh",
@@ -442,7 +505,7 @@ function setup(){
 			"hhhhhr........................................Mhhhhhh",
 			"hhhhhr........................................Mhhhhhh",
 			"hhhhhr........................................Mhhhhhh",
-			"hhhhhrw.........................p............cMhhhhh",
+			"hhhhhrw..0......................p...........0cMhhhhh",
 			"hhhhhhffffffffffu....L.......paataff...p...mffhhhhhh",
 			"hhhhhhhhHHhHhHhHr....L..fffaaKKTTTTO...t...MhHhhhhhh",
 			"hhhhhhKlKlKlKlKlr....L..LTTTTTO........t...MhHhhhhhh",
@@ -450,17 +513,17 @@ function setup(){
 			"hhhhhhKlKlKlKlKlr....L..L..............t...MhHhhhhhh",
 			"hhhhhhTTTTTTTTTTO....L..L..............t...MhHhhhhhh",
 			"hhhhhr...............L..L..............t...MhHhhhhhh",
-			"hhhhhr...............L.................MaaaKKlhhhhhh",
+			"hhhhhr...............L......0..........MaaaKKlhhhhhh",
 			"hhhhhr...................S.............UTTTKhHhhhhhh",
 			"hhhhhr...............ffffffaaap...p........MKlhhhhhh",
 			"hhhhhr...............UTTTTTTTTX...t........MKlhhhhhh",
-			"hhhhhr........................Maaataafff...MKlhhhhhh",
+			"hhhhhr........................Maaataafff..0MKlhhhhhh",
 			"hhhhhr........................UTTTTTTTTO..PXhHhhhhhh",
 			"hhhhhr.....................................MKlhhhhhh",
 			"hhhhhr.........................../.......z.MKlhhhhhh",
 			"hhhhhr.......................ffffffffffu.Z.MKlhhhhhh",
 			"hhhhhr......................ffHhHhHhHhHr.Z.MKlhhhhhh",
-			"hhhhhr...................ffffKlKlKlKlKlr.Z.MKlhhhhhh",
+			"hhhhhr...........0.......ffffKlKlKlKlKlr.Z.MKlhhhhhh",
 			"hhhhhrY...ffu..mfff...fffhHhHhHhHhHhHhHr.Z.MhHhhhhhh",
 			"hhhhhKffffflr..MlKfffffKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
 			"hhhhhKlKlKllr..MlKlKlKlKlKlKlKlKlKlKlKlr.Z.MKlhhhhhh",
@@ -486,6 +549,7 @@ function setup(){
 	healthbar.collider = "s";
 	// healthbar.textSize = 4;
 	healthbar.layer = "HUD";
+	healthbar.layer = 200;
 
 	healthcoverer = new Sprite();
 	healthcoverer.w = 2;
@@ -495,6 +559,7 @@ function setup(){
 	healthcoverer.collider = "s";
 	healthcoverer.stroke = "gray";
 	healthcoverer.visible = false;
+	healthcoverer.layer = 201;
 
 
 	for(s of spawntile){
@@ -533,6 +598,15 @@ function setup(){
 		}
 	}
 
+	enemy[0].allowx = enemy[0].x;
+
+	b = new Sprite(-100, -100, 75, 50, "s");
+	b.text = "Respawn!"
+	b.color = "gray";
+	b.textSize = 3;
+	b.visible = false;
+
+
 }
 
 function draw() {
@@ -542,28 +616,77 @@ function draw() {
   	movements();
   	spritesheetset();
 	updateHealthBar();
+	enemyfunctionality();
+	pausefeature();
 }
 
+let count = 0;
+
 function enemyfunctionality(){
-	if(moveleft){
-		enemy.vel.x = -5;
-	}
-	if(moveright){
-		enemy.vel.x = 5;
-	}
+	for(e of enemy){
+		if(!enemyattacking){
+			if(move){
+				e.moveTo(e.allowx + 50);
+				e.changeAni("walk")
+				e.mirror.x = true;
+				
+			}
+			if(!move){
+				e.moveTo(e.allowx - 50);
+				e.changeAni("walk");
+				e.mirror.x = false;
+			}
+		}
 
-	if(enemy.vel.x < 0){
-		enemy.changeAni("walk");
-		enemy.mirror.x = false;
-	}
-	else{
-		enemy.changeAni("walk")
-		enemy.mirror.x = true;
-	}
+		let distance = dist(player.x, player.y, e.x, e.y);
 
-	// add player attacking the shroom 
-	// maybe add idle frame
-	// add shroom attack if in distance  
+		if(distance <= 50){
+			if(player.x - e.x < 0){
+				player.mirror.x = false;
+			}
+			if(player.x - e.x > 0){
+				player.mirror.x = true;
+			}
+		  enemyattacking = true;
+		  e.moveTo(player.x)
+		}
+		else{
+			enemyattacking = false;
+		}
+
+		if(((attack1cd || attack2cd || attack3cd) && (player.colliding(enemy))) && (!attackcd)){
+			e.health -= 25;
+			e.changeAni("stun")
+			attackcd = true;
+			setTimeout(() => {
+				attackcd = false;
+			}, 500);
+			setTimeout(() => {
+				e.changeAni("walk")
+			}, 500);
+		}
+		if(distance < 20){
+			enemyattacking = true;
+			e.changeAni("attack")
+			e.moveTo(player.x, player.y, 2);
+			if((e.colliding(player)) && (!attacktimeout)){
+				player.health -= 25;
+				attacktimeout = true;
+				e.x += 20;
+				setTimeout(() => {
+					attacktimeout = false;
+				}, 1000)
+			}
+		}
+
+		if(e.health == 0){
+			e.changeAni("death");
+			e.collider = "n";
+			setTimeout(() => {
+				e.remove();
+			}, 1000)
+		}
+	}
 }
 
 
@@ -621,14 +744,23 @@ function movements(){
 			}
 			if(kb.pressing("d")){
 				player.vel.x += 7;
-				dashcooldown = false;
+				dashcooldown = true;
 				setTimeout(() => {
-					dashcooldown = true;
+					dashcooldown = false;
 				}, 1000)
 			}
 		}
 	}
 
+	if((superJump) && (!superjumpcooldown)){
+		if(kb.presses("q")){
+				player.vel.y -= 10;
+				superjumpcooldown = true;
+				setTimeout(() => {
+					superjumpcooldown = false;
+				}, 1000)
+		}
+	}
 }
 
 function spritesheetset(){
@@ -810,31 +942,44 @@ function camerastuff(){
 
 }
 
+
 function story(){
 	if(player.overlaps(exittile)){
-		// save to local storage
-		// maybe play animation
+		// this is the area for assigning local Storage
+
+		// set dash
+		localStorage.setItem("dash", dashmove);
+
+		// set coin count
+		localStorage.setItem("stars", stars);
+
+		// set walljump
+		localStorage.setItem("walljump", walljump)
+
+
 		setTimeout(() => {
 			window.location.href = "hub.html"
 		}, 1000)
 	}
 	for(d of dash){
-		if(player.overlaps(d)){
-			storytimeout = true;
-			setTimeout(() => {
-				storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
-				storybean2.image = headeri;
-				storybean2.scale = 0.1;
-				storybean2.layer = 1;
-				storybean2.text = "Ability dash unlocked! \n  ahead you are able to dash,\n (using 'E').";
-				storybean2.textSize = 3;
-				dashmove = true;
+		if(!dashmove){
+			if(player.overlaps(d)){
+				storytimeout = true;
 				setTimeout(() => {
-					storybean2.remove();
-					storytimeout = false;
-				}, 10000)
-			}, 1000)
-			s.remove();
+					storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
+					storybean2.image = headeri;
+					storybean2.scale = 0.1;
+					storybean2.layer = 1;
+					storybean2.text = "Ability dash unlocked! \n  ahead you are able to dash,\n (using 'E').";
+					storybean2.textSize = 3;
+					dashmove = true;
+					setTimeout(() => {
+						storybean2.remove();
+						storytimeout = false;
+					}, 10000)
+				}, 1000)
+				s.remove();
+			}
 		}
 	}
 	for(s of skillspritetile){
@@ -856,6 +1001,12 @@ function story(){
 			s.remove();
 		}
 	}
+	for(s of star){
+		if(player.overlaps(s)){
+			s.remove();
+			stars++;
+		}
+	}
 	if(storybean){
 		storybean.x = player.x;
 		storybean.y = player.y - 40;
@@ -865,11 +1016,12 @@ function story(){
 		storybean2.x = player.x;
 		storybean2.y = player.y - 40;
 	}
-
-	for(d of dash){
-		if(player.overlaps(d)){
-			dashmove = true;
-			d.remove();
+	if(dashmove){
+		for(d of dash){
+			if(player.overlaps(d)){
+				dashmove = true;
+				d.remove();
+			}
 		}
 	}
 
@@ -881,31 +1033,133 @@ function story(){
 	}
 
 	if(player.health <= 0){
+		player.changeAni("death")
 		if(!ran){
-			player.changeAni("death")
-			window.location.href = "level1.html"
+			world.timeScale = 0;
+
+			let bean = new Sprite(player.x, player.y, windowWidth/2, windowHeight/2, "s");
+			bean.color = "red";
+			bean.opacity = 0.5;
+			bean.layer = 20000;
+
+			// window.location.href = "level1.html"
 			ran = true;
+
+			b.x = player.x;
+			b.y = player.y;
+
+			b.layer = 20001;
+
+			b.visible = true;
+		}
+		if(ran){
+			if(b){
+				if(b.mouse.hovering()){
+					b.color = "red";
+					b.textColor = "white";
+					mouse.cursor = "pointer";
+				}
+				if(!b.mouse.hovering()){
+					b.color = "gray";
+					b.textColor = "black";
+					mouse.cursor = "default";
+				}
+
+				if(b.mouse.pressed()){
+					b.color = "red";
+					b.textColor = "white";
+					mouse.cursor = "pointer";
+
+					window.location.href = window.location.href;
+				}
+			}
 		}
 	}
 }
 
 function updateHealthBar() {
-	player.maxHealth = 100;
     if (!healthbar || !healthcoverer || !player) return; // Prevent undefined errors
 
-    healthbar.x = player.x - 150;
-    healthbar.y = player.y - 85;
+    healthbar.x = camera.x - 100;
+    healthbar.y = camera.y - 85;
 
     // Ensure health stays between 0 and 100
-    player.health = constrain(player.health, 0, 100);
 
-    // Ensure width is positive
-    healthcoverer.w = player.health;
-
-
-    // Align right edge of healthcoverer with healthbar
-    healthcoverer.x = healthbar.x + (100 - healthcoverer.w) / 2 - 17.5; 
+    // Calculate the width for the healthcoverer based on missing health
+    // This should represent the portion of the bar that is empty
+	if((player.health < 100) && (player.health > 0)){
+    	healthcoverer.w = 100 - player.health;
+	}
+    
+    // Position the coverer at the right portion of the health bar
+    // Starting from where the remaining health ends
+    healthcoverer.x = healthbar.x + (player.health / 2) - 17.5;
     healthcoverer.y = healthbar.y;
 
-    healthcoverer.visible = player.health < 100;
+    // Only show the coverer if health is less than 100%
+	if(player.health < 100){
+		healthcoverer.visible = true;
+	}
 }
+
+function pausefeature(){
+	// skibiid sigma
+  
+  let btop;
+  let bmiddle;
+  let bbottom;
+
+  
+	if(kb.presses("p")){
+		if(world.timeScale == 0){
+			// Remove all sprites from the beavo group when paused
+			beavo.removeAll();
+			world.timeScale = 1;
+			console.log("skibidi 1 fired");
+		}
+		else{
+			// Pause the game
+			world.timeScale = 0;
+			console.log("skibidi 2 fired");
+  
+			// Create and add sprites to the beavo group
+			b = new beavo.Sprite(player.x, player.y, 50, 50, "s");
+			b.color = "beige";
+			b.textSize = 3;
+			beavo.add(b); // Add to group
+  
+			btop = new beavo.Sprite(b.x, b.y - b.h/2, 22.5, 11, "s");
+			btop.color = "yellow";
+			btop.text = "Stars: " + stars;
+			btop.textSize = 3;
+			beavo.add(btop); // Add to group
+  
+			bmiddle = new beavo.Sprite(b.x, b.y, 40, 25, "s");
+			bmiddle.text = "P to unpause";
+			bmiddle.color = "yellow";
+			bmiddle.textSize = 3;
+			beavo.add(bmiddle); // Add to group
+  
+			bbottom = new beavo.Sprite(b.x, b.y + b.h/2, 22.5, 11, "s");
+			bbottom.color = "yellow";
+			bbottom.textSize = 3;
+			bbottom.text = "Menu!";
+			beavo.add(bbottom); // Add to group
+
+			if(bbottom){
+				if(bbottom.mouse.hovering()){
+				  bbottom.color = "green";
+				  bbottom.textColor = "white";
+				}
+				else{
+				  bbottom.color = "yellow";
+				  bbottom.textColor = "black";
+				}
+			  
+				if(bbottom.mouse.pressed()){
+				  window.location.href = "hub.html";
+				}
+			}
+		}
+	}
+  }
