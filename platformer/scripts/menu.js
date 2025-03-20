@@ -1,3 +1,11 @@
+if(localStorage.getItem("tutorialcomplete") != null){
+	console.log(localStorage.getItem("tutorialcomplete"))
+	var tutorialcomplete = localStorage.getItem("tutorialcomplete");
+	tutorialcomplete = JSON.parse(tutorialcomplete);
+}
+else{
+  var tutorialcomplete = false;
+}
 if(localStorage.getItem("dash") != null){
 	console.log(localStorage.getItem("dash"))
 	var dashmove = localStorage.getItem("dash");
@@ -61,9 +69,13 @@ let notstarted = true;
 let scores;
 let settingsopen = false;
 let bbottom;
+let titlehover, playhover, loadhover, settingshover;
+let tilehoveri;
+
 
 function preload(){
 
+    tilehoveri = loadImage("assets/greenborder.png");
     sli = loadImage("level1assets/stoneleft.png");
     rsi = loadImage("level1assets/rightstone.png");
     spritesheet01i = loadImage("spriteassets/samurai.png");
@@ -256,6 +268,34 @@ function setup(){
   // cracktexture.image = cracktexturei;
   // cracktexture.scale = (windowHeight/200)
 
+  titlehover = new Sprite(windowWidth/2, windowHeight/10, 200, 50, "s");
+  titlehover.color = "lightgreen";
+  titlehover.opacity = 1;
+  titlehover.image = tilehoveri;
+  titlehover.visible = false;
+  titlehover.scale = 1.25;
+
+  playhover = new Sprite(windowWidth/2, windowHeight/2 - 100, 200, 50, "s");
+  playhover.color = "lightgreen";
+  playhover.opacity = 1;
+  playhover.image = tilehoveri;
+  playhover.visible = false;
+  playhover.scale = 1;
+
+  loadhover = new Sprite(windowWidth/2, windowHeight/2, 200, 50, "s");
+  loadhover.color = "lightgreen";
+  loadhover.opacity = 1;
+  loadhover.image = tilehoveri;
+  loadhover.visible = false;
+  loadhover.scale = 1;
+  
+  settingshover = new Sprite(windowWidth/2, windowHeight/2 + 100, 200, 50);
+  settingshover.color = "lightgreen";
+  settingshover.opacity = 1;
+  settingshover.image = tilehoveri;
+  settingshover.visible = false;
+  settingshover.scale = 1;
+
   titlebar = new Sprite(windowWidth/2, windowHeight/10, 200, 50);
   titlebar.image = (bluebari);
   titlebar.scale = (2);
@@ -270,9 +310,10 @@ function setup(){
   settingsback.visible = false;
 
   instructions = new Sprite(windowWidth/2 + windowWidth/4, windowHeight/2, 400, 400, "s");
-  instructions.text = "W to jump \n  \nA to go left \n \nD to go right \n \nIf these moves have been unlocked these are the keybinds: \n \nE & a movement direction to dash \n \nQ to SuperJump \n \n C to double jump or to jump mid air \n \n Left Click to attack \n \n Press P to pause"
-  instructions.textSize = 15;
+  instructions.text = "W to jump \n  \nA to go left \n \nD to go right \n \nIf these moves have been unlocked these are the keybinds: \n \nE & a movement direction to dash \n \nQ to SuperJump \n \n C to double jump or to jump mid air \n \n Left Click to attack \n \n Press P to pause "
+  instructions.textSize = 15; 
   instructions.color = "grey";
+
 
   soundplus = new Sprite(((windowWidth/2) + settingsback.w/4), windowHeight/2, 25, 25, "n");
   // soundplus.text = "+";
@@ -319,13 +360,13 @@ function setup(){
 
   scores = new Sprite(windowWidth/2 - windowWidth/3, windowHeight/2 + windowHeight/8, 400, 400, "s"); 
   scores.color = "gray";
-  scores.text = "Stars Collected: " + stars + "! \n \n Dash: " + dashmove + "! \n \n WallJump: " + walljump + "! \n \n SuperJump: " + superJump + "! \n \n DoubleJump: " + doublejump;
+  scores.text = "Stars Collected: " + stars + "! \n \n Dash: " + dashmove + "! \n \n WallJump: " + walljump + "! \n \n SuperJump: " + superJump + "! \n \n DoubleJump: " + doublejump + "! \n \n Tutorial Complete: " + tutorialcomplete;
   scores.textSize = 17;
 
   settings = new Sprite(windowWidth/2, windowHeight/2 + 100, 200, 50);
   settings.image = (bluebari);
   settings.scale = (1.5);
-  settings.text = "Settings!";
+  settings.text = "Tutorial!";
   settings.textSize = 40;
 
   settings.collider = "s";
@@ -357,6 +398,28 @@ function setup(){
     player.overlaps(instructions);
     player.overlaps(settingsback);
     player.overlaps(scores);
+    player.overlaps(settingshover);
+    player.overlaps(titlehover);
+    player.overlaps(playhover);
+    player.overlaps(loadhover);
+
+    settingshover.overlaps(bg1);
+    settingshover.overlaps(bg2);
+    settingshover.overlaps(bg3);
+    settingshover.overlaps(playbutton);
+    settingshover.overlaps(settings);
+    settingshover.overlaps(loadbutton);
+    settingshover.overlaps(sounddisplayclose);
+    settingshover.overlaps(soundminus);
+    settingshover.overlaps(soundplus);
+    settingshover.overlaps(titlebar);
+    settingshover.overlaps(instructions);
+    settingshover.overlaps(settingsback);
+    settingshover.overlaps(scores);
+    settingshover.overlaps(titlehover);
+    settingshover.overlaps(playhover);
+    settingshover.overlaps(loadhover);
+    
   }
 
 }
@@ -370,6 +433,47 @@ function draw() {
 
 function buttoninteractions(){
   if(!settingsopen){
+
+    if(titlebar.mouse.hovering()){
+      titlehover.visible = true;
+      titlehover.x = titlebar.x;
+      titlehover.y = titlebar.y;
+      console.log("skibidi fired")
+    }
+    else{
+      titlehover.visible = false;
+      console.log("skibidi unfired")
+    }
+
+    if(playbutton.mouse.hovering()){
+      playhover.visible = true;
+      console.log("skibidi fired")
+    }
+    else{
+      playhover.visible = false;
+      console.log("skibidi unfired")
+    }
+
+    if(loadbutton.mouse.hovering()){
+      loadhover.visible = true;
+      console.log("skibidi fired")
+    }
+    else{
+      loadhover.visible = false;
+      console.log("skibidi unfired")
+    }
+
+    if(settings.mouse.hovering()){
+      settingshover.visible = true;
+      settingshover.x = settings.x;
+      settingshover.y = settings.y;
+      console.log("skibidi fired")
+    }
+    else{
+      settingshover.visible = false;
+      console.log("skibidi unfired")
+    }
+
     if(playbutton.mouse.pressing()){
       playbutton.image = bluebarpressedi;
     }
@@ -395,69 +499,15 @@ function buttoninteractions(){
         localStorage.setItem("soundval", soundval);
     }
     if(settings.mouse.pressed()){
-        // popup settings menu
-        playbutton.visible = false;
-        loadbutton.visible = false;
-        settings.visible = false;
-        playbutton.collider = "n";
-        loadbutton.collider = "n";
-        settings.collider = "n";
-        instructions.visible = false;
-        instructions.collider = "n";
-        scores.visible = false;
-        scores.collider = "n";
-  
-        sounddisplay.visible = true;
-        sounddisplay.collider = "s";
-        soundplus.visible = true;
-        soundplus.collider = "s";
-        soundminus.visible = true;
-        soundminus.collider = "s";
-        settingsback.visible = true;
-        settingsback.collider = "s";
-        sounddisplayclose.visible = true;
-        sounddisplayclose.collider = "s";
+      window.location.href = "tutorial.html";
 
-        settingsopen = true;
+      localStorage.setItem("soundval", soundval);
         
     }
   }
   else{
-    if((soundplus.mouse.pressed()) && (soundval < 200)){
-      soundval += 20;
-      sounddisplay.text = soundval  + "%";
-    }
-  
-    if((soundminus.mouse.pressed()) && (soundval > 0)){
-      soundval -= 20;
-      sounddisplay.text = soundval + "%";
-    }
-  
-    if(sounddisplayclose.mouse.pressed()){
-      sounddisplay.visible = false;
-      sounddisplay.collider = "n";
-      soundplus.visible = false;
-      soundplus.collider = "n";
-      soundminus.visible = false;
-      soundminus.collider = "n";
-      settingsback.visible = false;
-      settingsback.collider = "n";
-      sounddisplayclose.visible = false;
-      sounddisplay.collider = "n";
-  
-      playbutton.visible = true;
-      loadbutton.visible = true;
-      settings.visible = true;
-      playbutton.collider = "s";
-      loadbutton.collider = "s";
-      settings.collider = "s";
-      instructions.visible = true;
-      instructions.collider = "s";
-      scores.visible = true;
-      scores.collider = "s";
-      
-      settingsopen = false;
-    }
+    
+
   }
 
 
