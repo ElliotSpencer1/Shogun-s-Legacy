@@ -25,6 +25,13 @@ if(localStorage.getItem("superJump") != null){
   } 
   else{
 	var superJump = false;
+}
+if(localStorage.getItem("doublejump") != null){
+    var doublejump = localStorage.getItem("doublejump");
+    doublejump = JSON.parse(superJump);
+  } 
+  else{
+    var doublejump = false;
   }
 
 let player;
@@ -48,6 +55,8 @@ let enemy, enemyi, enemyspawntile, enemyattacking = false, move = true, superjum
 let attacktimeout = false, attackcd = false;
 let star, stari;
 let beavo;
+let doublejumpcooldown = false;
+let doublejumpobject;
 
 
 
@@ -97,6 +106,7 @@ function playersetup(){
 	player.anis.offset.y = -11.5;
 	player.bounciness = 0;
 	player.friction = 5;
+	player.health = 100;
 
 }
 
@@ -154,7 +164,7 @@ function setup(){
 	grass.w = 24;
 	grass.h = 24;
 	grass.img = mudblocki;
-	grass.scale = 0.66666666666666667;
+	grass.scale = 1;
 	grass.tile = 'g';
 	grass.rotationLock = true;
 	grass.collider = "s";
@@ -434,6 +444,18 @@ function cameradefiner(){
 }
 
 function movements(){
+
+	if(doublejump){
+		if((kb.presses("c")) && (!doublejumpcooldown)){
+			player.vel.y -= 5;
+			doublejumpcooldown = true;
+		}
+		if(doublejumpcooldown){
+			if(((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)) || (player.colliding(grass)))))){
+				doublejumpcooldown = false;
+			}
+		}
+	}
 
 	if((kb.presses("w")) && ((player.colliding(outermap)) || ((player.colliding(outermapcornerBL)) || ((player.colliding(entry)) || (player.colliding(outermapcornerBR)) || (player.colliding(outermapcornerTL)) || (player.colliding(outermapcornerTR)) || (player.colliding(grass)))))){
 		player.vel.y -= 5;

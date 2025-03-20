@@ -25,6 +25,13 @@ if(localStorage.getItem("superJump") != null){
   } 
   else{
 	var superJump = false;
+}
+if(localStorage.getItem("doublejump") != null){
+    var doublejump = localStorage.getItem("doublejump");
+    doublejump = JSON.parse(superJump);
+  } 
+  else{
+    var doublejump = false;
   }
 
 let player, base;
@@ -47,6 +54,8 @@ let attacktimeout = false, attackcd = false, superjumpcooldown = false;
 let star, stari;
 let beavo;	
 let b;
+let doublejumpcooldown = false;
+let doublejumpobject;
 
 function preload(){
 
@@ -675,7 +684,7 @@ function enemyfunctionality(){
 				e.x += 20;
 				setTimeout(() => {
 					attacktimeout = false;
-				}, 1000)
+				}, 2000)
 			}
 		}
 
@@ -691,6 +700,18 @@ function enemyfunctionality(){
 
 
 function movements(){
+	if(doublejump){
+        if((kb.presses("c")) && (!doublejumpcooldown)){
+            player.vel.y -= 5;
+            doublejumpcooldown = true;
+        }
+        if(doublejumpcooldown){
+            if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb))){
+                doublejumpcooldown = false;
+            }
+        }
+    
+    }
 
 	if((kb.presses("w")) && ((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb)))){
 		player.vel.y -= 5;
@@ -944,6 +965,10 @@ function camerastuff(){
 
 
 function story(){
+	if(player.y > 3000){
+		player.health = 0;
+	}
+
 	if(player.overlaps(exittile)){
 		// this is the area for assigning local Storage
 

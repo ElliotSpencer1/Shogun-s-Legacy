@@ -1,4 +1,4 @@
-let titlebar, playbutton, loadbutton, settings, bgoverlay, settingsback, soundplus, soundminus, sounddisplay, cracktexture, sounddisplayclose;
+let titlebar, playbutton, loadbutton, settings, bgoverlay, settingsback, soundplus, soundminus, sounddisplay, cracktexture, sounddisplayclose, instructions;
 // images for the above objects
 let titlebari, bluebari, bluebarpressedi, backgroundi, settingsbacki, cracktexturei, arli, arri;
 // values
@@ -20,6 +20,7 @@ let healthcoverer;
 let enemy, enemyi, enemyspawntile, enemyattacking = false, move = true;
 let attacktimeout = false, attackcd = false;
 let notstarted = true;
+let scores;
 
 function preload(){
 
@@ -224,6 +225,11 @@ function setup(){
   settingsback.scale = 6;
   settingsback.visible = false;
 
+  instructions = new Sprite(windowWidth/2 + windowWidth/4, windowHeight/2, 400, 400, "s");
+  instructions.text = "W to jump \n  \nA to go left \n \nD to go right \n \nIf these moves have been unlocked these are the keybinds: \n \nE & a movement direction to dash \n \nQ to SuperJump \n \n C to double jump or to jump mid air \n \n Left Click to attack"
+  instructions.textSize = 15;
+  instructions.color = "grey";
+
   soundplus = new Sprite(((windowWidth/2) + settingsback.w/4), windowHeight/2, 25, 25, "n");
   // soundplus.text = "+";
   soundplus.textSize = 40;
@@ -267,6 +273,12 @@ function setup(){
   loadbutton.textSize = 40;
   loadbutton.collider = "s";
 
+  scores = new Sprite(windowWidth/2 - windowWidth/2, windowHeight/2, 200, 50); 
+  scores.scale = (1.5);
+  scores.text = " ";
+  scores.textSize = 40;
+  scores.collider = "s";
+
   settings = new Sprite(windowWidth/2, windowHeight/2 + 100, 200, 50);
   settings.image = (bluebari);
   settings.scale = (1.5);
@@ -299,6 +311,7 @@ function setup(){
     player.overlaps(soundminus);
     player.overlaps(soundplus);
     player.overlaps(titlebar);
+    player.overlaps(instructions);
   }
 
 }

@@ -27,12 +27,12 @@ else{
   var superJump = false;
 }
 if(localStorage.getItem("doublejump") != null){
-  var doublejump = localStorage.getItem("doublejump");
-  doublejump = JSON.parse(superJump);
-} 
-else{
-  var doublejump = false;
-}
+    var doublejump = localStorage.getItem("doublejump");
+    doublejump = JSON.parse(superJump);
+  } 
+  else{
+    var doublejump = false;
+  }
 
  
 let player, base;
@@ -485,6 +485,24 @@ function setup(){
   superjumpobject.w = 20;
   superjumpobject.h = 20;
 
+  doublejumpobject = new Group();
+  doublejumpobject.w = 24;
+  doublejumpobject.h = 24;
+  doublejumpobject.tile = "9";
+  doublejumpobject.w = 200;
+  doublejumpobject.h = 200;
+  doublejumpobject.spriteSheet = skillspritei;
+  doublejumpobject.addAnis({
+    skillthings: {row:0, frames:15},
+  })
+  doublejumpobject.friction = 0;
+  doublejumpobject.rotationLock = true;
+  doublejumpobject.collider = "S";
+  doublejumpobject.layer = 7;
+  doublejumpobject.scale = 0.1;
+  doublejumpobject.w = 20;
+  doublejumpobject.h = 20;
+
   enemyspawntile = new Group();
   enemyspawntile.w = 24;
   enemyspawntile.h = 24;
@@ -506,87 +524,56 @@ function setup(){
 
   // Extended level with more tactical jumps and challenges
   levelselect = new Tiles(
-    [ "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
-      "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
-      "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
-      "hhhhTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTThhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhrw....0....................................Mhhh",
-      "hhhhfffaafaaaaff..............................Mhhh",
-      "hhhhTTTTTTTTTTTO..............................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr...............f..........................Mhhh",
-      "hhhr...............T..........................Mhhh",
-      "hhhr.....................0....................Mhhh",
-      "hhhr.....................f....................Mhhh",
-      "hhhr.....................T....................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................f...............Mhhh",
-      "hhhr..........................T...............Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr.....................................0....Mhhh",
-      "hhhr..............................fffffffff...Mhhh",
-      "hhhr..............................UTTTTTTTO...Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr.......................0..................Mhhh",
-      "hhhr......................ff..................Mhhh",
-      "hhhr..................0...hh...0..............Mhhh",
-      "hhhr..................Maaahhaaar..............Mhhh",
-      "hhhr..................MIIIhhIIIr..............Mhhh",
-      "hhhr..................MTTTTTTTTr..............Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr....fffffffff.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr.............................Mhhh",
-      "hhhr....Mhhhhhhhr..0..........................Mhhh",
-      "hhhr....Mhhhhhhhhfffffffffff..................Mhhh",
-      "hhhr....Mhhhhhhhhhhhhhhhhhhr..................Mhhh",
-      "hhhr....UTTTTTTTTTTTTTTTTTTO..................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr.............................0............Mhhh",
-      "hhhr........................ffffffff..........Mhhh",
-      "hhhr........................UTTTTTTO..........Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr....................................0.....Mhhh",
-      "hhhr................................ffffffff..Mhhh",
-      "hhhr................................UTTTTTTO..Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhr..........................................Mhhh",
-      "hhhrY...................................ff....Mhhh",
-      "hhhhffffffff............................UO....Mhhh",
-      "hhhhhhhhhhhr............................00...cMhhh",
-      "hhhhhhhhhhhr.....................ffffaaaaaaaffhhhh",
-      "hhhhTTTTTTTO..................ffffhhrIIIIIIIhhhhhh",
-      "hhhr..........fffffffffffaafffffhhhhrIIIIIIIhhhhhh",
-      "hhhr..........MhhhhhhhhhhIIhhhhhhhhhrIIIIIIIhhhhhh", 
-      "hhhh..........hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+    [   "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+        "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+        "hhhTTTTTTTTTTTTTTTTTTTTTTTTTTTTThhhTTTTTTTTTTTThhh",
+        "hhr.............................Mhr............Mhh",
+        "hhr.............................Mhrw...........Mhh",
+        "hhr.............................Mhhfff.........Mhh",
+        "hhr..00.........................MhhUTO.........Mhh",
+        "hhr.ffff....L...................Mhr............Mhh",
+        "hhr.UTTO....L...................Mhr............Mhh",
+        "hhr......L..L...................Mhr............Mhh",
+        "hhr......L..L...................Mhr.....0......Mhh",
+        "hhr......L......................Mhr.....ff.....Mhh",
+        "hhr......L......................Mhr.....UO.....Mhh",
+        "hhr.............................Mhr............Mhh",
+        "hhr.......9....0.../............Mhr.........ff.Mhh",
+        "hhr....fffffffffffffffffffff....Mhr.........UO.Mhh",
+        "hhr....MhhTTTTTTTTTTTTTTTTTO....Mhr........L...Mhh",
+        "hhr....Mhr......................Mhr.ff.L...L...Mhh",
+        "hhr....Mhr......................Mhr.UO.L...L...Mhh",
+        "hhr....Mhr......................Mhr....L...L...Mhh",
+        "hhr....Mhr......................Mhr....L...L...Mhh",
+        "hhr....Mhr......................Mhr....L...L...Mhh",
+        "hhr....Mhr................/.....Mhr....L..0L...Mhh",
+        "hhr....Mhr....ffffffffffffffffffhhr....L...L...Mhh",
+        "hhr....Mhr....Mhhhhhhhhhhhhhhhhhhhr....L...L...Mhh",
+        "hhr....Mhr....UTTTTTTTTTTTTTTTTTTTO....L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr...0.........................L...L...Mhh",
+        "hhr....Mhr...f.........................L0..L...Mhh",
+        "hhr....Mhr...h..0......................L...L...Mhh",
+        "hhr....Mhr......f......................L...L...Mhh",
+        "hhr....Mhr......h......................L...L...Mhh",
+        "hhr....Mhr.........f.......................L...Mhh",
+        "hhr....Mhr.........h.......................L...Mhh",
+        "hhr....Mhr.........h...f....0....fffffff...L...Mhh",
+        "hhr....Mhr.............h....f....UhhhhhO...L...Mhh",
+        "hhr....Mhr..................h..........L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.............................L..0L...Mhh",
+        "hhr....Mhr.............................L...L...Mhh",
+        "hhr....Mhr.....................................Mhh",
+        "hhrY...Mhr....../................./............Mhh",
+        "hhhffffhhhfffffffffffffffffffffffffffffffffffffhhh",
+        "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
+        "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh",
     ],
     0, 0,
     23.9, 23.9
@@ -645,9 +632,10 @@ function setup(){
     s.changeAni("skillthings"); 
   }
 
-  for (j of superjumptile) {
-    j.changeAni("superjumpani");
+  for (d of doublejumpobject) {
+    d.changeAni("skillthings"); 
   }
+
 
   for(e of enemyspawntile){
     if(!e.rotationLock){
@@ -749,18 +737,18 @@ function enemyfunctionality(){
 }
 
 function movements(){
-  if(doublejump){
-    if((kb.presses("c")) && (!doublejumpcooldown)){
-        player.vel.y -= 5;
-        doublejumpcooldown = true;
-    }
-    if(doublejumpcooldown){
-        if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb))){
-            doublejumpcooldown = false;
+    if(doublejump){
+        if((kb.presses("c")) && (!doublejumpcooldown)){
+            player.vel.y -= 5;
+            doublejumpcooldown = true;
         }
+        if(doublejumpcooldown){
+            if((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb))){
+                doublejumpcooldown = false;
+            }
+        }
+    
     }
-
-}
 
 	if((kb.presses("w")) && ((player.colliding(mpp)) || (player.colliding(ogle)) || (player.colliding(ogre)) || (player.colliding(cbs)) || (player.colliding(gs)) || (player.colliding(cts)) || (player.colliding(sltb)))){
 		player.vel.y -= 5;
@@ -1013,7 +1001,7 @@ function camerastuff(){
 }
 
 function story(){
-  if(player.y > 3000){
+    if(player.y > 3000){
 		player.health = 0;
 	}
 	if(player.overlaps(exittile)){
@@ -1022,8 +1010,8 @@ function story(){
 		// set coin count
 		localStorage.setItem("stars", stars);
 
-    // set the jump ability
-    localStorage.setItem("superJump", superJump)
+        // set the jump ability
+        localStorage.setItem("doublejump", doublejump)
 
 		setTimeout(() => {
 			window.location.href = "hub.html"
@@ -1047,6 +1035,27 @@ function story(){
 					}, 10000)
 				}, 1000)
 				s.remove();
+			}
+		}
+	}
+    for(d of doublejumpobject){
+		if(!doublejump){
+			if(player.overlaps(d)){
+				storytimeout = true;
+				setTimeout(() => {
+					storybean2 = new Sprite(player.x, player.y - 60, 80, 40, "s");
+					storybean2.image = headeri;
+					storybean2.scale = 0.1;
+					storybean2.layer = 1;
+					storybean2.text = "Ability doublejump unlocked! \n  you are now able to superjump,\n (using 'C' after jumping).";
+					storybean2.textSize = 3;
+					doublejump = true;
+					setTimeout(() => {
+						storybean2.remove();
+						storytimeout = false;
+					}, 10000)
+				}, 1000)
+				d.remove();
 			}
 		}
 	}
