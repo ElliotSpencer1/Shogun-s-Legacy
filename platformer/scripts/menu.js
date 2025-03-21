@@ -299,7 +299,7 @@ function setup(){
   titlebar = new Sprite(windowWidth/2, windowHeight/10, 200, 50);
   titlebar.image = (bluebari);
   titlebar.scale = (2);
-  titlebar.text = "Unit 15 Game";
+  titlebar.text = "Shogun's Legacy";
   titlebar.textSize = 40;
   titlebar.collider = "s";
 
