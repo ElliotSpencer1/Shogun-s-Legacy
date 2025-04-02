@@ -3,3 +3,11 @@ html{
     margin: 0px;
     padding: 0px;
 }
+
+@font-face {
+    font-family: "marimpa";
+    src:
+      local("marimpa"),
+      url("fonts/Marimpa.otf") format("opentype"),
+      url("fonts/Marimpa.ttf") format("securetype"),
+  }

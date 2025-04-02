@@ -299,6 +299,7 @@ function setup(){
   titlebar = new Sprite(windowWidth/2, windowHeight/10, 200, 50);
   titlebar.image = (bluebari);
   titlebar.scale = (2);
+  titlebar.textFont = "fonts/Marimpa.ttf";
   titlebar.text = "Shogun's Legacy";
   titlebar.textSize = 40;
   titlebar.collider = "s";
@@ -358,9 +359,46 @@ function setup(){
   loadbutton.textSize = 40;
   loadbutton.collider = "s";
 
+  let b1,b2,b3,b4,b5;
+  if(dashmove){
+    b1 = "unlocked";
+  }
+  else{
+    b1 = "locked";
+  }
+
+  if(walljump){
+    b2 = "unlocked";
+  }
+  else{
+    b2 = "locked";
+  }
+
+  if(superJump){
+    b3 = "unlocked";
+  }
+  else{
+    b3 = "locked";
+  }
+
+  if(doublejump){
+    b4 = "unlocked";
+  }
+  else{
+    b4 = "locked";
+  }
+
+  if(tutorialcomplete){
+    b5 = "unlocked";
+  }
+  else{
+    b5 = "locked";
+  }
+  
+
   scores = new Sprite(windowWidth/2 - windowWidth/3, windowHeight/2 + windowHeight/8, 400, 400, "s"); 
   scores.color = "gray";
-  scores.text = "Stars Collected: " + stars + "! \n \n Dash: " + dashmove + "! \n \n WallJump: " + walljump + "! \n \n SuperJump: " + superJump + "! \n \n DoubleJump: " + doublejump + "! \n \n Tutorial Complete: " + tutorialcomplete;
+  scores.text = "Stars Collected: " + stars + "! \n \n Dash: " + b1 + "! \n \n WallJump: " + b2 + "! \n \n SuperJump: " + b3 + "! \n \n DoubleJump: " + b4 + "! \n \n Tutorial Complete: " + b5 + "!";
   scores.textSize = 17;
 
   settings = new Sprite(windowWidth/2, windowHeight/2 + 100, 200, 50);
